@@ -1,0 +1,16 @@
+---
+import { mockCourses } from '../../../lib/mockData';
+
+export function getStaticPaths() {
+  return mockCourses.map(course => ({
+    params: { slug: course.slug },
+    props: { course },
+  }));
+}
+
+const { course } = Astro.props;
+const firstLesson = course.lessons[0];
+
+// Redirect to first lesson
+return Astro.redirect(`/courses/${course.slug}/${firstLesson.slug}`);
+---

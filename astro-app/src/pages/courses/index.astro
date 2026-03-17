@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CourseGrid from '../../components/courses/CourseGrid.astro';
+import { mockCourses } from '../../lib/mockData';
+
+const totalLessons = mockCourses.reduce((sum, c) => sum + c.lessons.length, 0);
+---
+
+<BaseLayout title="Courses" description="Browse all partner training courses.">
+
+  <!-- Page Header -->
+  <div class="bg-surface border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="flex items-center gap-2.5 mb-4">
+        <span class="w-5 h-px bg-hallow-purple"></span>
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Courses</span>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
+        Partner Training Library
+      </h1>
+      <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
+        Self-paced video courses to help you get the most from your Hallow partnership.
+      </p>
+      <div class="flex gap-6 mt-6 pt-6 border-t border-gray-200">
+        <div>
+          <span class="text-xl font-extrabold text-gray-900">{mockCourses.length}</span>
+          <span class="text-[12px] text-gray-400 ml-1.5">Courses</span>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold text-gray-900">{totalLessons}</span>
+          <span class="text-[12px] text-gray-400 ml-1.5">Video Lessons</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <CourseGrid courses={mockCourses} />
+  </div>
+</BaseLayout>

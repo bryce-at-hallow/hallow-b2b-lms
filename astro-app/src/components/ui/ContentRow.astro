@@ -1,0 +1,82 @@
+---
+interface Props {
+  title: string;
+  viewAllHref?: string;
+  viewAllLabel?: string;
+}
+
+const { title, viewAllHref, viewAllLabel = 'View all' } = Astro.props;
+---
+
+<section class="py-8" data-content-row>
+  <!-- Row header -->
+  <div class="flex items-center justify-between px-5 sm:px-10 lg:px-12 mb-5">
+    <h2 class="font-semibold text-[17px] text-gray-900 tracking-tight">{title}</h2>
+    <div class="flex items-center gap-3">
+      {viewAllHref && (
+        <a
+          href={viewAllHref}
+          class="text-[13px] font-semibold text-gray-400 hover:text-hallow-purple transition-colors"
+        >
+          {viewAllLabel}
+        </a>
+      )}
+      <!-- Scroll arrows (desktop only) -->
+      <div class="hidden sm:flex items-center gap-1">
+        <button
+          class="scroll-prev w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-hallow-purple hover:text-hallow-purple transition-colors"
+          aria-label="Scroll left"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button
+          class="scroll-next w-7 h-7 rounded-full border border-gray-200 flex items-center justify-center text-gray-400 hover:border-hallow-purple hover:text-hallow-purple transition-colors"
+          aria-label="Scroll right"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scrollable card strip -->
+  <div
+    class="scroll-container flex gap-4 overflow-x-auto px-5 sm:px-10 lg:px-12 pb-3"
+    style="scrollbar-width: none; -ms-overflow-style: none;"
+  >
+    <slot />
+    <!-- Right padding sentinel -->
+    <div class="shrink-0 w-4 sm:w-6 lg:w-8"></div>
+  </div>
+</section>
+
+<style>
+  .scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-content-row]').forEach(row => {
+    const container = row.querySelector<HTMLElement>('.scroll-container');
+    const prev = row.querySelector<HTMLButtonElement>('.scroll-prev');
+    const next = row.querySelector<HTMLButtonElement>('.scroll-next');
+    if (!container) return;
+
+    const scrollAmount = 320;
+    next?.addEventListener('click', () => container.scrollBy({ left: scrollAmount, behavior: 'smooth' }));
+    prev?.addEventListener('click', () => container.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
+
+    // Show/hide arrows based on scroll position
+    function updateArrows() {
+      if (prev) prev.style.opacity = container.scrollLeft > 10 ? '1' : '0.3';
+      if (next) next.style.opacity = container.scrollLeft < container.scrollWidth - container.clientWidth - 10 ? '1' : '0.3';
+    }
+    container.addEventListener('scroll', updateArrows, { passive: true });
+    updateArrows();
+  });
+</script>

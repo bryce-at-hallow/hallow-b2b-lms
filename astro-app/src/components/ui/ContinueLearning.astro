@@ -1,0 +1,78 @@
+---
+// Renders nothing on server — populated entirely by client-side localStorage
+// Only shows if the user has visited a lesson before
+---
+
+<div id="continue-learning-section" class="hidden px-4 sm:px-6 lg:px-8 pb-2 pt-6">
+  <div class="flex items-center gap-2.5 mb-4">
+    <span class="w-5 h-px bg-hallow-purple"></span>
+    <span class="text-xs font-bold uppercase tracking-[0.18em] text-gray-400">Continue Learning</span>
+  </div>
+  <div id="continue-learning-card"></div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'hallowLastWatched';
+
+  interface LastWatched {
+    courseTitle: string;
+    lessonTitle: string;
+    lessonIndex: number;
+    totalLessons: number;
+    thumbnail: string;
+    coursePath: string;
+  }
+
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    try {
+      const data: LastWatched = JSON.parse(raw);
+      const { courseTitle, lessonTitle, lessonIndex, totalLessons, thumbnail, coursePath } = data;
+      const progress = Math.round(((lessonIndex + 1) / totalLessons) * 100);
+      const lessonNum = lessonIndex + 1;
+
+      const card = document.getElementById('continue-learning-card');
+      const section = document.getElementById('continue-learning-section');
+
+      if (card && section) {
+        card.innerHTML = `
+          <a href="${coursePath}" class="group flex items-center gap-5 bg-white border border-gray-100 rounded-2xl p-4 hover:border-hallow-purple/30 hover:shadow-md transition-all duration-200 max-w-2xl">
+            <!-- Thumbnail -->
+            <div class="shrink-0 w-28 sm:w-36 rounded-xl overflow-hidden" style="aspect-ratio: 16/9;">
+              <img src="${thumbnail}" alt="${courseTitle}" class="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300" />
+            </div>
+
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <p class="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-400 mb-1">
+                Lesson ${lessonNum} of ${totalLessons}
+              </p>
+              <p class="font-semibold text-gray-900 text-[15px] leading-snug mb-0.5 truncate group-hover:text-hallow-purple transition-colors">
+                ${courseTitle}
+              </p>
+              <p class="text-gray-400 text-[13px] truncate mb-3">${lessonTitle}</p>
+
+              <!-- Progress bar -->
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-hallow-purple rounded-full transition-all" style="width: ${progress}%"></div>
+                </div>
+                <span class="text-[11px] text-gray-400 font-medium shrink-0">${progress}%</span>
+              </div>
+            </div>
+
+            <!-- Resume button -->
+            <div class="shrink-0 hidden sm:flex items-center gap-1.5 px-4 py-2 bg-hallow-purple text-white text-[13px] font-semibold rounded-xl group-hover:bg-hallow-purple-dark transition-colors">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              Resume
+            </div>
+          </a>
+        `;
+        section.classList.remove('hidden');
+      }
+    } catch {
+      // Corrupted data — ignore silently
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+</script>

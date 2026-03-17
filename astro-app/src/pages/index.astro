@@ -1,0 +1,247 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroCarousel from '../components/ui/HeroCarousel.astro';
+import type { CarouselItem } from '../components/ui/HeroCarousel.astro';
+import ContentRow from '../components/ui/ContentRow.astro';
+import CourseCard from '../components/courses/CourseCard.astro';
+import WebinarCard from '../components/webinars/WebinarCard.astro';
+import ResourceCard from '../components/resources/ResourceCard.astro';
+import { mockCourses, mockWebinars, mockResources } from '../lib/mockData';
+import { formatDate } from '../lib/utils';
+
+// ── Carousel items ────────────────────────────────────────────
+
+const carouselItems: CarouselItem[] = [];
+
+// 1. Spotlight webinar (upcoming) — highest priority
+const spotlightWebinar = mockWebinars.find(w => w.spotlight && w.status === 'upcoming');
+if (spotlightWebinar) {
+  carouselItems.push({
+    id: spotlightWebinar._id,
+    title: spotlightWebinar.title,
+    subtitle: `With ${spotlightWebinar.presenter} · ${formatDate(spotlightWebinar.scheduledAt)}`,
+    tag: 'Upcoming Webinar',
+    thumbnail: spotlightWebinar.thumbnail,
+    href: spotlightWebinar.registrationUrl ?? spotlightWebinar.recordingUrl ?? '/webinars',
+    ctaLabel: spotlightWebinar.registrationUrl ? 'Register Now' : 'Watch Recording',
+  });
+}
+
+// 2. Spotlight course
+const spotlightCourse = mockCourses.find(c => c.spotlight);
+if (spotlightCourse) {
+  const firstLesson = spotlightCourse.lessons[0];
+  carouselItems.push({
+    id: spotlightCourse._id,
+    title: spotlightCourse.title,
+    subtitle: spotlightCourse.description,
+    tag: `Featured Course · ${spotlightCourse.category}`,
+    thumbnail: spotlightCourse.thumbnail,
+    href: firstLesson
+      ? `/courses/${spotlightCourse.slug}/${firstLesson.slug}`
+      : `/courses/${spotlightCourse.slug}`,
+    ctaLabel: 'Start Course',
+  });
+}
+
+// 3. First upcoming webinar (if not already added as spotlight)
+const nextWebinar = mockWebinars
+  .filter(w => w.status === 'upcoming' && !w.spotlight)
+  .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime())[0];
+if (nextWebinar) {
+  carouselItems.push({
+    id: nextWebinar._id,
+    title: nextWebinar.title,
+    subtitle: `With ${nextWebinar.presenter} · ${formatDate(nextWebinar.scheduledAt)}`,
+    tag: 'Upcoming Webinar',
+    thumbnail: nextWebinar.thumbnail,
+    href: nextWebinar.registrationUrl ?? nextWebinar.recordingUrl ?? '/webinars',
+    ctaLabel: nextWebinar.registrationUrl ? 'Register Now' : 'Watch Recording',
+  });
+}
+
+// 4. A featured onboarding course (different from spotlight)
+const onboardingCourse = mockCourses.find(c => c.category === 'Onboarding' && !c.spotlight);
+if (onboardingCourse) {
+  const firstLesson = onboardingCourse.lessons[0];
+  carouselItems.push({
+    id: onboardingCourse._id,
+    title: onboardingCourse.title,
+    subtitle: onboardingCourse.description,
+    tag: 'Start Here',
+    thumbnail: onboardingCourse.thumbnail,
+    href: firstLesson
+      ? `/courses/${onboardingCourse.slug}/${firstLesson.slug}`
+      : `/courses/${onboardingCourse.slug}`,
+    ctaLabel: 'Start Course',
+  });
+}
+
+// ── Content rows ──────────────────────────────────────────────
+
+const startHereCourses = mockCourses
+  .filter(c => c.category === 'Onboarding')
+  .sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
+
+const upcomingWebinars = mockWebinars
+  .filter(w => w.status === 'upcoming')
+  .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+
+const allCourses = mockCourses
+  .slice()
+  .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+const recordings = mockWebinars.filter(w => w.status === 'past');
+
+const featuredResources = mockResources.filter(r => r.featured);
+const allResources = mockResources;
+
+// Stats for section tiles
+const totalCourses = mockCourses.length;
+const totalLessons = mockCourses.reduce((sum, c) => sum + c.lessons.length, 0);
+const totalResources = mockResources.length;
+---
+
+<BaseLayout title="Home" description="Your Partner Hub — courses, webinars, and resources for Hallow partners.">
+
+  <!-- ── Hero Carousel ──────────────────────────────────────── -->
+  <HeroCarousel items={carouselItems} />
+
+  <div class="pb-4">
+
+    <!-- ── Section tiles ──────────────────────────────────────── -->
+    <div class="px-5 sm:px-10 lg:px-12 pb-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+        <a href="/courses" class="group relative bg-white rounded-2xl p-5 text-left border border-gray-100 hover:border-hallow-purple/30 hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-hallow-purple/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          <div class="relative flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-hallow-purple/10 flex items-center justify-center shrink-0 group-hover:bg-hallow-purple/15 transition-colors">
+              <svg class="w-5 h-5 text-hallow-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900 text-[15px] group-hover:text-hallow-purple transition-colors">Courses</p>
+              <p class="text-gray-400 text-[12px]">{totalCourses} courses · {totalLessons} lessons</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-hallow-purple transition-colors ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+
+        <a href="/webinars" class="group relative bg-white rounded-2xl p-5 text-left border border-gray-100 hover:border-hallow-purple/30 hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-hallow-purple/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          <div class="relative flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-hallow-purple/10 flex items-center justify-center shrink-0 group-hover:bg-hallow-purple/15 transition-colors">
+              <svg class="w-5 h-5 text-hallow-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 10l4.553-2.07A1 1 0 0121 8.87v6.263a1 1 0 01-1.447.894L15 14M4 8h11a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2V10a2 2 0 012-2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900 text-[15px] group-hover:text-hallow-purple transition-colors">Webinars</p>
+              <p class="text-gray-400 text-[12px]">{upcomingWebinars.length} upcoming · {recordings.length} recordings</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-hallow-purple transition-colors ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+
+        <a href="/resources" class="group relative bg-white rounded-2xl p-5 text-left border border-gray-100 hover:border-hallow-purple/30 hover:shadow-md transition-all duration-200 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-hallow-purple/3 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          <div class="relative flex items-center gap-4">
+            <div class="w-11 h-11 rounded-xl bg-hallow-purple/10 flex items-center justify-center shrink-0 group-hover:bg-hallow-purple/15 transition-colors">
+              <svg class="w-5 h-5 text-hallow-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900 text-[15px] group-hover:text-hallow-purple transition-colors">Resources</p>
+              <p class="text-gray-400 text-[12px]">{totalResources} files &amp; guides</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-hallow-purple transition-colors ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ── Start Here ─────────────────────────────────────────── -->
+    {startHereCourses.length > 0 && (
+      <ContentRow title="Start Here" viewAllHref="/courses" viewAllLabel="All courses">
+        {startHereCourses.map((course, i) => (
+          <div class="shrink-0 w-[260px] sm:w-[280px]">
+            <CourseCard course={course} index={i} />
+          </div>
+        ))}
+      </ContentRow>
+    )}
+
+    <!-- ── Upcoming Webinars ───────────────────────────────────── -->
+    {upcomingWebinars.length > 0 && (
+      <ContentRow title="Upcoming Webinars" viewAllHref="/webinars" viewAllLabel="All webinars">
+        {upcomingWebinars.map((webinar, i) => (
+          <div class="shrink-0 w-[280px] sm:w-[300px]">
+            <WebinarCard webinar={webinar} index={i} />
+          </div>
+        ))}
+      </ContentRow>
+    )}
+
+    <!-- ── All Courses ─────────────────────────────────────────── -->
+    <ContentRow title="Courses" viewAllHref="/courses" viewAllLabel="View all">
+      {allCourses.map((course, i) => (
+        <div class="shrink-0 w-[260px] sm:w-[280px]">
+          <CourseCard course={course} index={i} />
+        </div>
+      ))}
+    </ContentRow>
+
+    <!-- ── Past Recordings ────────────────────────────────────── -->
+    {recordings.length > 0 && (
+      <ContentRow title="Past Recordings" viewAllHref="/webinars" viewAllLabel="All webinars">
+        {recordings.map((webinar, i) => (
+          <div class="shrink-0 w-[280px] sm:w-[300px]">
+            <WebinarCard webinar={webinar} index={i} />
+          </div>
+        ))}
+      </ContentRow>
+    )}
+
+    <!-- ── Resources ──────────────────────────────────────────── -->
+    <ContentRow title="Resources" viewAllHref="/resources" viewAllLabel="Resource library">
+      {(featuredResources.length > 0 ? featuredResources : allResources).map((resource, i) => (
+        <div class="shrink-0 w-[260px] sm:w-[280px]">
+          <ResourceCard resource={resource} index={i} />
+        </div>
+      ))}
+    </ContentRow>
+
+    <!-- ── Support CTA ────────────────────────────────────────── -->
+    <div class="px-5 sm:px-10 lg:px-12 py-8">
+      <div class="relative overflow-hidden bg-hallow-purple rounded-2xl px-7 py-9 flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div class="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+        <div class="relative">
+          <p class="text-white/60 text-[11px] font-bold uppercase tracking-[0.15em] mb-1.5">Partner Support</p>
+          <h3 class="text-white text-xl font-serif italic leading-snug">Need help with your partnership?</h3>
+          <p class="text-white/60 text-[13px] mt-1">Our partner success team is here for you.</p>
+        </div>
+        <a
+          href="mailto:parishes@hallow.app"
+          class="relative inline-flex items-center gap-2 px-5 py-2.5 bg-white text-hallow-purple text-[13px] font-bold rounded-xl hover:bg-gray-50 transition-colors shrink-0"
+        >
+          Contact Support
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>

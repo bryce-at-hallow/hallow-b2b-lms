@@ -1,0 +1,82 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  thumbnail: string;
+  href: string;
+  ctaLabel: string;
+  badge: string;
+  badgeVariant?: 'upcoming' | 'course' | 'recording';
+  meta?: string; // e.g. presenter name or lesson count
+}
+
+const {
+  title,
+  description,
+  thumbnail,
+  href,
+  ctaLabel,
+  badge,
+  badgeVariant = 'course',
+  meta,
+} = Astro.props;
+
+const badgeStyles = {
+  upcoming:  'bg-emerald-500 text-white',
+  course:    'bg-white/20 backdrop-blur-sm text-white border border-white/30',
+  recording: 'bg-white/20 backdrop-blur-sm text-white border border-white/30',
+};
+---
+
+<div class="relative w-full overflow-hidden rounded-2xl bg-gray-900" style="aspect-ratio: 21/9; min-height: 280px;">
+  <!-- Background image -->
+  <img
+    src={thumbnail}
+    alt={title}
+    class="absolute inset-0 w-full h-full object-cover opacity-70"
+  />
+
+  <!-- Layered gradients for legibility -->
+  <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+
+  <!-- Content -->
+  <div class="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
+    <div class="max-w-2xl">
+      <!-- Badge -->
+      <span class={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-4 ${badgeStyles[badgeVariant]}`}>
+        {badgeVariant === 'upcoming' && (
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+        )}
+        {badge}
+      </span>
+
+      <!-- Title -->
+      <h2 class="text-white font-bold text-2xl sm:text-3xl lg:text-4xl leading-tight mb-3 font-serif">
+        {title}
+      </h2>
+
+      <!-- Description -->
+      <p class="text-white/70 text-[14px] sm:text-[15px] leading-relaxed mb-1 line-clamp-2 max-w-xl">
+        {description}
+      </p>
+
+      {meta && (
+        <p class="text-white/50 text-[13px] mb-5">{meta}</p>
+      )}
+
+      <!-- CTA -->
+      <a
+        href={href}
+        target={href.startsWith('http') ? '_blank' : undefined}
+        rel={href.startsWith('http') ? 'noopener' : undefined}
+        class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 text-[13px] font-bold rounded-xl hover:bg-gray-100 transition-colors shadow-lg mt-4"
+      >
+        <svg class="w-4 h-4 text-hallow-purple" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        {ctaLabel}
+      </a>
+    </div>
+  </div>
+</div>

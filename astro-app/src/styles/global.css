@@ -1,0 +1,354 @@
+/* ── Hallow Moderat — self-hosted ───────────────────────────── */
+
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Thin-Italic.otf') format('opentype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Extralight-Italic.otf') format('opentype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Light-Italic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Book.otf') format('opentype');
+  font-weight: 350;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Book-Italic.otf') format('opentype');
+  font-weight: 350;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Regular-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Medium-Italic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Semibold-Italic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Bold-Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Extrabold-Italic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat';
+  src: url('/fonts/Hallow-Moderat-Black-Italic.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Hallow Moderat Serif — self-hosted ─────────────────────── */
+
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Thin.otf') format('opentype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Thin-Italic.otf') format('opentype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Extralight-Italic.otf') format('opentype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Light-Italic.otf') format('opentype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Book.otf') format('opentype');
+  font-weight: 350;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Book-Italic.otf') format('opentype');
+  font-weight: 350;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Regular-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Medium-Italic.otf') format('opentype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Semibold-Italic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Bold-Italic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Extrabold-Italic.otf') format('opentype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Hallow Moderat Serif';
+  src: url('/fonts/Hallow-Moderat-Serif-Black-Italic.otf') format('opentype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Tailwind ───────────────────────────────────────────────── */
+
+@import "tailwindcss";
+
+@theme {
+  --color-hallow-purple: #6D0EC1;
+  --color-hallow-purple-dark: #560AAD;
+  --color-hallow-purple-muted: #F3E8FF;
+  --color-hallow-purple-light: #EDE0FF;
+  --color-surface: #FAFAF9;
+  --font-family-sans: 'Hallow Moderat', system-ui, sans-serif;
+  --font-family-serif: 'Hallow Moderat Serif', Georgia, serif;
+}
+
+/* ── Animations ─────────────────────────────────────────────── */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-scale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+.animate-fade-up { animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-slide-in-right { animation: slide-in-right 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-fade-in-scale { animation: fade-in-scale 0.5s ease-out forwards; }
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.12s; }
+.stagger-3 { animation-delay: 0.19s; }
+.stagger-4 { animation-delay: 0.26s; }
+.stagger-5 { animation-delay: 0.33s; }
+.stagger-6 { animation-delay: 0.40s; }
+
+/* ── Base ───────────────────────────────────────────────────── */
+
+html {
+  font-family: 'Hallow Moderat', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+/* Dot grid background pattern */
+.dot-grid {
+  background-image: radial-gradient(circle, #6D0EC112 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #e2e2e2; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #6D0EC1; }

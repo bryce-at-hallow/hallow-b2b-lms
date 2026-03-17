@@ -1,0 +1,25 @@
+---
+import ResourceCard from './ResourceCard.astro';
+import EmptyState from '../ui/EmptyState.astro';
+import type { Resource } from '../../lib/types';
+
+interface Props {
+  resources: Resource[];
+}
+
+const { resources } = Astro.props;
+---
+
+{resources.length === 0 ? (
+  <EmptyState
+    title="No resources found"
+    description="Try a different category or check back later."
+    icon="📂"
+  />
+) : (
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+    {resources.map((resource, i) => (
+      <ResourceCard resource={resource} index={i} />
+    ))}
+  </div>
+)}

@@ -1,0 +1,53 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  target?: string;
+  rel?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  class: className = '',
+  target,
+  rel,
+  type = 'button',
+  disabled = false,
+} = Astro.props;
+
+const sizeClasses = {
+  sm: 'px-3.5 py-1.5 text-xs',
+  md: 'px-5 py-2.5 text-sm',
+  lg: 'px-7 py-3.5 text-base',
+};
+
+const variantClasses = {
+  primary: 'bg-hallow-purple text-white hover:bg-hallow-purple-dark shadow-sm',
+  outline: 'border border-hallow-purple text-hallow-purple hover:bg-hallow-purple-muted',
+  ghost: 'text-hallow-purple hover:bg-hallow-purple-muted',
+};
+
+const classes = [
+  'inline-flex items-center justify-center gap-2 rounded-[7px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hallow-purple focus-visible:ring-offset-2',
+  sizeClasses[size],
+  variantClasses[variant],
+  disabled ? 'opacity-50 pointer-events-none' : '',
+  className,
+].filter(Boolean).join(' ');
+---
+
+{href ? (
+  <a href={href} class={classes} target={target} rel={rel}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={classes} disabled={disabled}>
+    <slot />
+  </button>
+)}

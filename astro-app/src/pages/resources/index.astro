@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ResourceFilters from '../../components/resources/ResourceFilters.astro';
+import ResourceCard from '../../components/resources/ResourceCard.astro';
+import EmptyState from '../../components/ui/EmptyState.astro';
+import { mockResources } from '../../lib/mockData';
+
+const categories = [...new Set(mockResources.map(r => r.category))];
+---
+
+<BaseLayout title="Resources" description="Downloadable materials, guides, and tools for Hallow partners.">
+
+  <!-- Page Header -->
+  <div class="bg-surface border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="flex items-center gap-2.5 mb-4">
+        <span class="w-5 h-px bg-hallow-purple"></span>
+        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Resources</span>
+      </div>
+      <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
+        Resource Library
+      </h1>
+      <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
+        Everything you need to support your partnership — from marketing materials to technical documentation.
+      </p>
+      <div class="flex gap-6 mt-6 pt-6 border-t border-gray-200">
+        <div>
+          <span class="text-xl font-extrabold text-gray-900">{mockResources.length}</span>
+          <span class="text-[12px] text-gray-400 ml-1.5">Resources</span>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold text-gray-900">{categories.length}</span>
+          <span class="text-[12px] text-gray-400 ml-1.5">Categories</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <ResourceFilters categories={categories} />
+
+    {mockResources.length === 0 ? (
+      <EmptyState title="No resources yet" description="Resources will be added soon." icon="📂" />
+    ) : (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="resources-grid">
+        {mockResources.map((resource, i) => (
+          <div data-resource-category={resource.category}>
+            <ResourceCard resource={resource} index={i} />
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

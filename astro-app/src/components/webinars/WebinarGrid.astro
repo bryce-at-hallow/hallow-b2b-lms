@@ -1,0 +1,27 @@
+---
+import WebinarCard from './WebinarCard.astro';
+import EmptyState from '../ui/EmptyState.astro';
+import type { Webinar } from '../../lib/types';
+
+interface Props {
+  webinars: Webinar[];
+  emptyTitle?: string;
+  emptyDescription?: string;
+}
+
+const {
+  webinars,
+  emptyTitle = 'No webinars found',
+  emptyDescription = 'Check back soon for upcoming sessions.',
+} = Astro.props;
+---
+
+{webinars.length === 0 ? (
+  <EmptyState title={emptyTitle} description={emptyDescription} icon="🎙️" />
+) : (
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {webinars.map((webinar, i) => (
+      <WebinarCard webinar={webinar} index={i} />
+    ))}
+  </div>
+)}

@@ -1,0 +1,142 @@
+---
+import CourseLayout from '../../../layouts/CourseLayout.astro';
+import VideoPlayer from '../../../components/courses/VideoPlayer.astro';
+import { mockCourses } from '../../../lib/mockData';
+import { formatDuration } from '../../../lib/utils';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const course of mockCourses) {
+    for (const lesson of course.lessons) {
+      paths.push({
+        params: { slug: course.slug, lessonSlug: lesson.slug },
+        props: { course, lesson },
+      });
+    }
+  }
+  return paths;
+}
+
+const { course, lesson } = Astro.props;
+const lessonIndex = course.lessons.findIndex(l => l.slug === lesson.slug);
+const prevLesson = lessonIndex > 0 ? course.lessons[lessonIndex - 1] : null;
+const nextLesson = lessonIndex < course.lessons.length - 1 ? course.lessons[lessonIndex + 1] : null;
+
+// Data passed to client script for localStorage
+const lastWatched = {
+  courseSlug: course.slug,
+  lessonSlug: lesson.slug,
+  courseTitle: course.title,
+  lessonTitle: lesson.title,
+  lessonIndex,
+  totalLessons: course.lessons.length,
+  thumbnail: course.thumbnail,
+  coursePath: `/courses/${course.slug}/${lesson.slug}`,
+};
+---
+
+<script define:vars={{ lastWatched }}>
+  try {
+    localStorage.setItem('hallowLastWatched', JSON.stringify(lastWatched));
+  } catch {
+    // Private browsing or storage full — ignore
+  }
+</script>
+
+<CourseLayout course={course} currentLesson={lesson}>
+  <!-- Video -->
+  <VideoPlayer
+    videoProvider={lesson.videoProvider}
+    videoId={lesson.videoId}
+    title={lesson.title}
+  />
+
+  <!-- Lesson Content -->
+  <div class="px-6 lg:px-10 py-8 max-w-3xl">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-1.5 text-[11px] text-gray-400 mb-6 font-medium">
+      <a href="/courses" class="hover:text-hallow-purple transition-colors">Courses</a>
+      <span class="text-gray-200">/</span>
+      <a href={`/courses/${course.slug}`} class="hover:text-hallow-purple transition-colors truncate max-w-[160px]">{course.title}</a>
+      <span class="text-gray-200">/</span>
+      <span class="text-gray-500 truncate max-w-[140px]">{lesson.title}</span>
+    </div>
+
+    <!-- Lesson meta -->
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-[11px] font-bold uppercase tracking-[0.15em] text-gray-300">
+        Lesson {lessonIndex + 1} of {course.lessons.length}
+      </span>
+      <span class="w-1 h-1 rounded-full bg-gray-200"></span>
+      <span class="text-[11px] text-gray-400 font-medium">{formatDuration(lesson.duration)}</span>
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-900 leading-tight mb-4">{lesson.title}</h1>
+    <p class="text-gray-500 text-[15px] leading-relaxed mb-8">{lesson.description}</p>
+
+    <!-- Downloads -->
+    {lesson.downloadableAssets && lesson.downloadableAssets.length > 0 && (
+      <div class="mb-8 p-5 bg-hallow-purple-muted/50 border border-hallow-purple/10 rounded-2xl">
+        <h3 class="flex items-center gap-2 text-[13px] font-bold text-gray-900 mb-3">
+          <svg class="w-4 h-4 text-hallow-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Lesson Downloads
+        </h3>
+        <div class="flex flex-col gap-2">
+          {lesson.downloadableAssets.map(asset => (
+            <a
+              href={asset.url}
+              download
+              class="flex items-center gap-3 px-4 py-3 bg-white rounded-xl hover:shadow-sm border border-gray-100 hover:border-hallow-purple/20 transition-all group"
+            >
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-lg bg-red-50 text-red-600 font-mono shrink-0">
+                {asset.fileType}
+              </span>
+              <span class="text-[13px] text-gray-700 group-hover:text-hallow-purple transition-colors flex-1">{asset.title}</span>
+              <svg class="w-3.5 h-3.5 text-gray-300 group-hover:text-hallow-purple transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Prev / Next -->
+    <div class="flex gap-3 pt-6 border-t border-gray-100">
+      {prevLesson ? (
+        <a
+          href={`/courses/${course.slug}/${prevLesson.slug}`}
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-[13px] font-semibold text-gray-600 rounded-xl hover:border-hallow-purple hover:text-hallow-purple transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Previous
+        </a>
+      ) : (
+        <div class="flex-1" />
+      )}
+      {nextLesson ? (
+        <a
+          href={`/courses/${course.slug}/${nextLesson.slug}`}
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-hallow-purple text-white text-[13px] font-semibold rounded-xl hover:bg-hallow-purple-dark transition-colors"
+        >
+          Next Lesson
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      ) : (
+        <a
+          href="/courses"
+          class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 text-[13px] font-semibold text-gray-600 rounded-xl hover:border-hallow-purple hover:text-hallow-purple transition-colors"
+        >
+          Back to Courses
+        </a>
+      )}
+    </div>
+  </div>
+</CourseLayout>

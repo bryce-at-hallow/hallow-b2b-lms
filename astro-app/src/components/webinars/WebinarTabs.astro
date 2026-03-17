@@ -1,0 +1,83 @@
+---
+import WebinarGrid from './WebinarGrid.astro';
+import type { Webinar } from '../../lib/types';
+
+interface Props {
+  upcoming: Webinar[];
+  past: Webinar[];
+}
+
+const { upcoming, past } = Astro.props;
+---
+
+<div>
+  <!-- Tab Buttons -->
+  <div class="flex items-center gap-1 p-1 bg-gray-100/70 rounded-xl w-fit mb-10">
+    <button
+      id="tab-upcoming"
+      data-tab="upcoming"
+      class="tab-btn px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-200 bg-white text-gray-900 shadow-sm"
+    >
+      Upcoming
+      {upcoming.length > 0 && (
+        <span class="ml-2 bg-hallow-purple text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+          {upcoming.length}
+        </span>
+      )}
+    </button>
+    <button
+      id="tab-past"
+      data-tab="past"
+      class="tab-btn px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-200 text-gray-400 hover:text-gray-700"
+    >
+      Past Webinars
+      {past.length > 0 && (
+        <span class="ml-2 bg-gray-200 text-gray-500 text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+          {past.length}
+        </span>
+      )}
+    </button>
+  </div>
+
+  <!-- Tab Panels -->
+  <div id="panel-upcoming" data-panel="upcoming">
+    <WebinarGrid
+      webinars={upcoming}
+      emptyTitle="No upcoming webinars"
+      emptyDescription="New sessions will be announced soon. Check back later."
+    />
+  </div>
+
+  <div id="panel-past" data-panel="past" class="hidden">
+    <WebinarGrid
+      webinars={past}
+      emptyTitle="No past recordings yet"
+      emptyDescription="Recordings will appear here after live sessions are complete."
+    />
+  </div>
+</div>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+  const panels = document.querySelectorAll<HTMLDivElement>('[data-panel]');
+
+  function activateTab(tabName: string) {
+    tabs.forEach(tab => {
+      const isActive = tab.dataset.tab === tabName;
+      if (isActive) {
+        tab.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+        tab.classList.remove('text-gray-400', 'hover:text-gray-700');
+      } else {
+        tab.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+        tab.classList.add('text-gray-400', 'hover:text-gray-700');
+      }
+    });
+    panels.forEach(panel => {
+      panel.classList.toggle('hidden', panel.dataset.panel !== tabName);
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => activateTab(tab.dataset.tab!));
+  });
+</script>

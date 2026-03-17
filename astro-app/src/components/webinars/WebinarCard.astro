@@ -1,0 +1,122 @@
+---
+import { formatDurationMinutes } from '../../lib/utils';
+import type { Webinar } from '../../lib/types';
+
+interface Props {
+  webinar: Webinar;
+  index?: number;
+}
+
+const { webinar, index = 0 } = Astro.props;
+const isUpcoming = webinar.status === 'upcoming';
+const staggerClass = `stagger-${Math.min(index + 1, 6)}`;
+
+const date = new Date(webinar.scheduledAt);
+const day = date.toLocaleDateString('en-US', { day: '2-digit' });
+const month = date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+---
+
+<div class={`group relative flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-hallow-purple/25 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-fade-up opacity-0 ${staggerClass}`}>
+
+  <!-- Thumbnail with overlay -->
+  <div class="relative overflow-hidden" style="aspect-ratio: 16/9;">
+    <img
+      src={webinar.thumbnail}
+      alt={webinar.title}
+      class={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] ${!isUpcoming ? 'brightness-90' : ''}`}
+      loading="lazy"
+    />
+    <div class={`absolute inset-0 ${isUpcoming ? 'bg-gradient-to-t from-black/60 via-black/10 to-transparent' : 'bg-gradient-to-t from-black/70 via-black/20 to-black/10'}`}></div>
+
+    <!-- Status badge -->
+    <div class="absolute top-3 left-3">
+      {isUpcoming ? (
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[11px] font-semibold">
+          <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+          Live Soon
+        </span>
+      ) : (
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[11px] font-semibold border border-white/30">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          Recording
+        </span>
+      )}
+    </div>
+
+    {webinar.duration && (
+      <div class="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[11px] px-2 py-0.5 rounded font-medium">
+        {formatDurationMinutes(webinar.duration)}
+      </div>
+    )}
+
+    <!-- Date callout over image -->
+    <div class="absolute bottom-3 left-3 flex items-center gap-2">
+      <div class="flex flex-col items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">
+        <span class="text-[10px] font-bold text-hallow-purple leading-none uppercase">{month}</span>
+        <span class="text-[15px] font-extrabold text-gray-900 leading-tight">{day}</span>
+      </div>
+      {isUpcoming && (
+        <span class="text-white/90 text-[12px] font-medium">{timeStr}</span>
+      )}
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="flex flex-col flex-1 p-5">
+    <h3 class="font-semibold text-gray-900 text-[15px] leading-snug mb-2 group-hover:text-hallow-purple transition-colors">
+      {webinar.title}
+    </h3>
+    <p class="text-gray-400 text-[13px] leading-relaxed line-clamp-2 mb-4 flex-1">
+      {webinar.description}
+    </p>
+
+    <!-- Presenter -->
+    <div class="flex items-center gap-2 mb-4">
+      <div class="w-6 h-6 rounded-full bg-hallow-purple-muted flex items-center justify-center shrink-0">
+        <svg class="w-3.5 h-3.5 text-hallow-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+        </svg>
+      </div>
+      <span class="text-[12px] text-gray-500 font-medium truncate">{webinar.presenter}</span>
+    </div>
+
+    <!-- Tags -->
+    {webinar.tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5 mb-4">
+        {webinar.tags.map(tag => (
+          <span class="px-2 py-0.5 rounded-md bg-gray-50 border border-gray-100 text-[11px] text-gray-500 font-medium">{tag}</span>
+        ))}
+      </div>
+    )}
+
+    <!-- CTA -->
+    {isUpcoming && webinar.registrationUrl ? (
+      <a
+        href={webinar.registrationUrl}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-hallow-purple text-white text-[13px] font-semibold rounded-xl hover:bg-hallow-purple-dark transition-colors"
+      >
+        Register Now
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </a>
+    ) : webinar.recordingUrl ? (
+      <a
+        href={webinar.recordingUrl}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 border border-gray-200 text-gray-700 text-[13px] font-semibold rounded-xl hover:border-hallow-purple hover:text-hallow-purple transition-colors"
+      >
+        <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        Watch Recording
+      </a>
+    ) : null}
+  </div>
+</div>

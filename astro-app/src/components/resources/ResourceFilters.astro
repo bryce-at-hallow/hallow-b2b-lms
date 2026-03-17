@@ -1,0 +1,61 @@
+---
+import { categoryLabel } from '../../lib/utils';
+
+interface Props {
+  categories: string[];
+  activeCategory?: string;
+}
+
+const { categories, activeCategory = 'all' } = Astro.props;
+const allCategories = ['all', ...categories];
+---
+
+<div class="flex flex-wrap gap-2 mb-10" id="resource-filters">
+  {allCategories.map(cat => (
+    <button
+      data-category={cat}
+      class={`filter-btn px-4 py-2 rounded-xl text-[13px] font-semibold transition-all duration-150 border ${
+        cat === activeCategory
+          ? 'bg-hallow-purple text-white border-hallow-purple shadow-sm'
+          : 'bg-white text-gray-500 border-gray-200 hover:border-hallow-purple/50 hover:text-hallow-purple'
+      }`}
+    >
+      {cat === 'all' ? 'All Resources' : categoryLabel(cat)}
+    </button>
+  ))}
+</div>
+
+<script>
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('[data-resource-category]');
+
+  function applyFilter(category: string) {
+    filterBtns.forEach(btn => {
+      const isActive = btn.dataset.category === category;
+      btn.classList.toggle('bg-hallow-purple', isActive);
+      btn.classList.toggle('text-white', isActive);
+      btn.classList.toggle('border-hallow-purple', isActive);
+      btn.classList.toggle('shadow-sm', isActive);
+      btn.classList.toggle('bg-white', !isActive);
+      btn.classList.toggle('text-gray-500', !isActive);
+      btn.classList.toggle('border-gray-200', !isActive);
+    });
+
+    cards.forEach(card => {
+      const show = category === 'all' || card.dataset.resourceCategory === category;
+      card.style.display = show ? '' : 'none';
+    });
+
+    const url = new URL(window.location.href);
+    if (category === 'all') url.searchParams.delete('category');
+    else url.searchParams.set('category', category);
+    window.history.replaceState({}, '', url.toString());
+  }
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => applyFilter(btn.dataset.category!));
+  });
+
+  const initialCat = new URLSearchParams(window.location.search).get('category') ?? 'all';
+  applyFilter(initialCat);
+</script>

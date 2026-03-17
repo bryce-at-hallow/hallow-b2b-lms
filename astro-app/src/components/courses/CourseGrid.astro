@@ -1,0 +1,25 @@
+---
+import CourseCard from './CourseCard.astro';
+import EmptyState from '../ui/EmptyState.astro';
+import type { Course } from '../../lib/types';
+
+interface Props {
+  courses: Course[];
+}
+
+const { courses } = Astro.props;
+---
+
+{courses.length === 0 ? (
+  <EmptyState
+    title="No courses yet"
+    description="New courses are being created. Check back soon."
+    icon="🎓"
+  />
+) : (
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {courses.map((course, i) => (
+      <CourseCard course={course} index={i} />
+    ))}
+  </div>
+)}

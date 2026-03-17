@@ -1,0 +1,253 @@
+---
+export interface CarouselItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  tag?: string;
+  thumbnail: string;
+  href: string;
+  ctaLabel: string;
+}
+
+interface Props {
+  items: CarouselItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="pt-8 pb-6 px-5 sm:px-10 lg:px-12" id="hero-carousel-section">
+
+  <!-- Label -->
+  <h2 id="hero-carousel-label" class="font-bold text-[22px] text-gray-900 mb-4">Up Next</h2>
+
+  <!-- Carousel wrapper -->
+  <div class="relative" id="hero-carousel">
+
+    <!-- Slides track -->
+    <div class="overflow-hidden rounded-2xl" id="hero-track-outer">
+      <div
+        id="hero-slides-track"
+        class="flex"
+        style="transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);"
+      >
+        {items.map((item) => (
+          <div
+            class="hero-slide shrink-0 w-full relative overflow-hidden"
+            style="min-height: 420px; aspect-ratio: 16/7;"
+            data-tag={item.tag ?? ''}
+          >
+            <img
+              src={item.thumbnail}
+              alt={item.title}
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+            <!-- Gradient overlays -->
+            <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+
+            <!-- Content -->
+            <div class="absolute inset-0 flex flex-col justify-end p-8 sm:p-10 lg:p-12">
+              {item.tag && (
+                <p class="text-white/60 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">{item.tag}</p>
+              )}
+              <h3 class="text-white font-bold text-[1.6rem] sm:text-[2rem] leading-tight mb-2 max-w-xl">{item.title}</h3>
+              {item.subtitle && (
+                <p class="text-white/65 text-[14px] sm:text-[15px] leading-relaxed mb-6 max-w-md">{item.subtitle}</p>
+              )}
+              <a
+                href={item.href}
+                class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white text-gray-900 text-[13px] font-bold rounded-full hover:bg-gray-100 transition-colors w-fit"
+              >
+                <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                {item.ctaLabel}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Prev arrow -->
+    <button
+      id="hero-prev"
+      class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:bg-white transition-all opacity-0 pointer-events-none z-10"
+      aria-label="Previous"
+    >
+      <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+
+    <!-- Next arrow -->
+    <button
+      id="hero-next"
+      class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:bg-white transition-all z-10"
+      aria-label="Next"
+    >
+      <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+
+    <!-- Dot indicators -->
+    <div id="hero-dots" class="absolute bottom-5 right-6 flex items-center gap-1.5 z-10">
+      {items.map((_, i) => (
+        <button
+          class={`hero-dot h-1.5 rounded-full transition-all duration-300 ${i === 0 ? 'w-5 bg-white' : 'w-1.5 bg-white/40'}`}
+          data-index={String(i)}
+          aria-label={`Go to slide ${i + 1}`}
+        ></button>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const STORAGE_KEY = 'hallowLastWatched';
+
+  interface LastWatched {
+    courseTitle: string;
+    lessonTitle: string;
+    lessonIndex: number;
+    totalLessons: number;
+    thumbnail: string;
+    coursePath: string;
+  }
+
+  const section   = document.getElementById('hero-carousel-section');
+  const label     = document.getElementById('hero-carousel-label');
+  const track     = document.getElementById('hero-slides-track');
+  const dotsEl    = document.getElementById('hero-dots');
+  const prevBtn   = document.getElementById('hero-prev') as HTMLButtonElement | null;
+  const nextBtn   = document.getElementById('hero-next') as HTMLButtonElement | null;
+
+  if (!track || !dotsEl) throw new Error('HeroCarousel: missing DOM');
+
+  // ── Optionally prepend a "Continue Learning" slide ──────────
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    try {
+      const d: LastWatched = JSON.parse(raw);
+      const progress = Math.round(((d.lessonIndex + 1) / d.totalLessons) * 100);
+
+      // Build slide HTML
+      const slide = document.createElement('div');
+      slide.className = 'hero-slide shrink-0 w-full relative overflow-hidden';
+      slide.style.cssText = 'min-height: 420px; aspect-ratio: 16/7;';
+      slide.dataset.tag = 'continue learning';
+      slide.innerHTML = `
+        <img src="${d.thumbnail}" alt="${d.courseTitle}" class="absolute inset-0 w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+        <div class="absolute inset-0 flex flex-col justify-end p-8 sm:p-10 lg:p-12">
+          <p class="text-white/60 text-[11px] font-bold uppercase tracking-[0.2em] mb-3">Continue Learning · Lesson ${d.lessonIndex + 1} of ${d.totalLessons}</p>
+          <h3 class="text-white font-bold text-[1.6rem] sm:text-[2rem] leading-tight mb-2 max-w-xl">${d.courseTitle}</h3>
+          <p class="text-white/65 text-[14px] sm:text-[15px] leading-relaxed mb-6 max-w-md">${d.lessonTitle}</p>
+          <!-- Progress bar -->
+          <div class="flex items-center gap-3 mb-5 max-w-xs">
+            <div class="flex-1 h-1 bg-white/25 rounded-full overflow-hidden">
+              <div class="h-full bg-white rounded-full" style="width: ${progress}%"></div>
+            </div>
+            <span class="text-white/60 text-[11px] font-medium shrink-0">${progress}%</span>
+          </div>
+          <a href="${d.coursePath}" class="inline-flex items-center gap-2.5 px-5 py-2.5 bg-white text-gray-900 text-[13px] font-bold rounded-full hover:bg-gray-100 transition-colors w-fit">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            Resume
+          </a>
+        </div>
+      `;
+      track.prepend(slide);
+
+      // Prepend a dot
+      const dot = document.createElement('button');
+      dot.className = 'hero-dot h-1.5 rounded-full transition-all duration-300 w-5 bg-white';
+      dot.dataset.index = '0';
+      dot.setAttribute('aria-label', 'Go to slide 1');
+      dotsEl.prepend(dot);
+
+      // Re-index existing dots
+      dotsEl.querySelectorAll<HTMLButtonElement>('.hero-dot:not(:first-child)').forEach((d, i) => {
+        d.dataset.index = String(i + 1);
+        d.setAttribute('aria-label', `Go to slide ${i + 2}`);
+        d.className = 'hero-dot h-1.5 rounded-full transition-all duration-300 w-1.5 bg-white/40';
+      });
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
+
+  // ── Carousel logic ───────────────────────────────────────────
+  const slides = () => track.querySelectorAll<HTMLElement>('.hero-slide');
+  const dots   = () => dotsEl.querySelectorAll<HTMLButtonElement>('.hero-dot');
+
+  let current = 0;
+  let autoTimer: ReturnType<typeof setInterval>;
+
+  function goTo(index: number) {
+    const total = slides().length;
+    current = (index + total) % total;
+
+    track.style.transform = `translateX(-${current * 100}%)`;
+
+    // Update dots
+    dots().forEach((dot, i) => {
+      if (i === current) {
+        dot.className = 'hero-dot h-1.5 rounded-full transition-all duration-300 w-5 bg-white';
+      } else {
+        dot.className = 'hero-dot h-1.5 rounded-full transition-all duration-300 w-1.5 bg-white/40';
+      }
+    });
+
+    // Update label
+    const tag = slides()[current]?.dataset.tag ?? '';
+    if (label) {
+      if (tag === 'continue learning') {
+        label.textContent = 'Pick Up Where You Left Off';
+      } else {
+        label.textContent = 'Up Next';
+      }
+    }
+
+    // Update arrow visibility
+    if (prevBtn) {
+      prevBtn.style.opacity = current > 0 ? '1' : '0';
+      prevBtn.style.pointerEvents = current > 0 ? 'auto' : 'none';
+    }
+    if (nextBtn) {
+      const atEnd = current >= total - 1;
+      nextBtn.style.opacity = atEnd ? '0' : '1';
+      nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
+    }
+  }
+
+  function startAuto() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => {
+      if (current < slides().length - 1) goTo(current + 1);
+      else clearInterval(autoTimer);
+    }, 6000);
+  }
+
+  function resetAuto() {
+    clearInterval(autoTimer);
+    startAuto();
+  }
+
+  prevBtn?.addEventListener('click', () => { goTo(current - 1); resetAuto(); });
+  nextBtn?.addEventListener('click', () => { goTo(current + 1); resetAuto(); });
+
+  dotsEl.addEventListener('click', (e) => {
+    const dot = (e.target as HTMLElement).closest<HTMLButtonElement>('.hero-dot');
+    if (dot?.dataset.index !== undefined) {
+      goTo(Number(dot.dataset.index));
+      resetAuto();
+    }
+  });
+
+  // Init
+  goTo(0);
+  startAuto();
+</script>

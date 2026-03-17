@@ -1,0 +1,46 @@
+---
+interface Props {
+  videoProvider: 'youtube' | 'vimeo' | 'wistia' | 'direct';
+  videoId: string;
+  title?: string;
+}
+
+const { videoProvider, videoId, title = 'Lesson Video' } = Astro.props;
+
+function getEmbedUrl(provider: string, id: string): string {
+  switch (provider) {
+    case 'youtube':
+      return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
+    case 'vimeo':
+      return `https://player.vimeo.com/video/${id}?byline=0&portrait=0`;
+    case 'wistia':
+      return `https://fast.wistia.net/embed/iframe/${id}`;
+    default:
+      return id; // direct URL
+  }
+}
+
+const embedUrl = getEmbedUrl(videoProvider, videoId);
+---
+
+<div class="w-full bg-black">
+  {videoProvider === 'direct' ? (
+    <video
+      class="w-full aspect-video"
+      src={videoId}
+      controls
+      title={title}
+    />
+  ) : (
+    <div class="relative w-full" style="padding-bottom: 56.25%;">
+      <iframe
+        class="absolute inset-0 w-full h-full"
+        src={embedUrl}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+        loading="lazy"
+      />
+    </div>
+  )}
+</div>
