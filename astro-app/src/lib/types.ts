@@ -23,7 +23,21 @@ export interface FileBlock extends BlockBase {
   fileSize?: string; // e.g. '2.4 MB'
 }
 
-export type CourseBlock = VideoBlock | FileBlock;
+export interface QuizQuestion {
+  _id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;       // 0-based index of the correct option
+  explanation?: string;       // shown after answering
+}
+
+export interface QuizBlock extends BlockBase {
+  blockType: 'quiz';
+  questions: QuizQuestion[];
+  passingScore?: number;      // percentage required to pass, default 80
+}
+
+export type CourseBlock = VideoBlock | FileBlock | QuizBlock;
 
 // ── Course ────────────────────────────────────────────────────
 

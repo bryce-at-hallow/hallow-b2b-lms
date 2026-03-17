@@ -1,0 +1,222 @@
+---
+import type { QuizBlock } from '../../lib/types';
+
+interface Props {
+  block: QuizBlock;
+}
+
+const { block } = Astro.props;
+const passing = block.passingScore ?? 80;
+const quizData = JSON.stringify({ questions: block.questions, passing });
+---
+
+<div id="quiz-root" class="px-6 lg:px-10 py-8 max-w-2xl" data-quiz={quizData}>
+
+  <!-- Progress bar -->
+  <div class="flex items-center gap-3 mb-8">
+    <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <div id="quiz-progress-bar" class="h-full bg-hallow-purple rounded-full transition-all duration-500" style="width: 0%"></div>
+    </div>
+    <span id="quiz-progress-label" class="text-[12px] text-gray-400 font-medium shrink-0">
+      0 / {block.questions.length}
+    </span>
+  </div>
+
+  <!-- Question view -->
+  <div id="quiz-question-view">
+    <p id="quiz-q-number" class="text-[11px] font-bold uppercase tracking-[0.18em] text-gray-400 mb-3"></p>
+    <h2 id="quiz-q-text" class="text-[1.2rem] sm:text-[1.4rem] font-bold text-gray-900 leading-snug mb-6"></h2>
+
+    <div id="quiz-options" class="flex flex-col gap-3 mb-6"></div>
+
+    <!-- Explanation (shown after answering) -->
+    <div id="quiz-explanation" class="hidden rounded-xl px-5 py-4 text-[13px] leading-relaxed mb-6"></div>
+
+    <button
+      id="quiz-next-btn"
+      class="hidden w-full sm:w-auto px-6 py-2.5 bg-hallow-purple text-white text-[13px] font-bold rounded-xl hover:bg-hallow-purple-dark transition-colors"
+    >
+      Next Question
+    </button>
+  </div>
+
+  <!-- Results view (hidden until complete) -->
+  <div id="quiz-results-view" class="hidden text-center py-4">
+    <div id="quiz-score-icon" class="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl"></div>
+    <h2 id="quiz-score-heading" class="text-2xl font-bold text-gray-900 mb-2"></h2>
+    <p id="quiz-score-sub" class="text-gray-400 text-[15px] mb-8"></p>
+
+    <!-- Score breakdown -->
+    <div class="flex items-center justify-center gap-8 mb-8 p-5 bg-gray-50 rounded-2xl">
+      <div>
+        <p class="text-3xl font-extrabold text-gray-900" id="quiz-correct-count"></p>
+        <p class="text-[12px] text-gray-400 mt-0.5">Correct</p>
+      </div>
+      <div class="w-px h-8 bg-gray-200"></div>
+      <div>
+        <p class="text-3xl font-extrabold text-gray-900" id="quiz-total-count"></p>
+        <p class="text-[12px] text-gray-400 mt-0.5">Questions</p>
+      </div>
+      <div class="w-px h-8 bg-gray-200"></div>
+      <div>
+        <p class="text-3xl font-extrabold" id="quiz-pct"></p>
+        <p class="text-[12px] text-gray-400 mt-0.5">Score</p>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <button
+        id="quiz-retry-btn"
+        class="px-6 py-2.5 border border-gray-200 text-gray-600 text-[13px] font-semibold rounded-xl hover:border-hallow-purple hover:text-hallow-purple transition-colors"
+      >
+        Try Again
+      </button>
+      <div id="quiz-continue-slot"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.getElementById('quiz-root');
+  if (!root) throw new Error('QuizPlayer: missing root');
+
+  const raw = root.dataset.quiz ?? '{}';
+  const { questions, passing } = JSON.parse(raw) as {
+    questions: { question: string; options: string[]; correctIndex: number; explanation?: string }[];
+    passing: number;
+  };
+
+  // Elements
+  const progressBar    = document.getElementById('quiz-progress-bar') as HTMLElement;
+  const progressLabel  = document.getElementById('quiz-progress-label') as HTMLElement;
+  const questionView   = document.getElementById('quiz-question-view') as HTMLElement;
+  const resultsView    = document.getElementById('quiz-results-view') as HTMLElement;
+  const qNumber        = document.getElementById('quiz-q-number') as HTMLElement;
+  const qText          = document.getElementById('quiz-q-text') as HTMLElement;
+  const optionsEl      = document.getElementById('quiz-options') as HTMLElement;
+  const explanationEl  = document.getElementById('quiz-explanation') as HTMLElement;
+  const nextBtn        = document.getElementById('quiz-next-btn') as HTMLButtonElement;
+  const retryBtn       = document.getElementById('quiz-retry-btn') as HTMLButtonElement;
+  const scoreIcon      = document.getElementById('quiz-score-icon') as HTMLElement;
+  const scoreHeading   = document.getElementById('quiz-score-heading') as HTMLElement;
+  const scoreSub       = document.getElementById('quiz-score-sub') as HTMLElement;
+  const correctCountEl = document.getElementById('quiz-correct-count') as HTMLElement;
+  const totalCountEl   = document.getElementById('quiz-total-count') as HTMLElement;
+  const pctEl          = document.getElementById('quiz-pct') as HTMLElement;
+
+  let current = 0;
+  let correct = 0;
+  let answered = false;
+
+  function updateProgress() {
+    const pct = Math.round((current / questions.length) * 100);
+    progressBar.style.width = `${pct}%`;
+    progressLabel.textContent = `${current} / ${questions.length}`;
+  }
+
+  function renderQuestion(index: number) {
+    answered = false;
+    const q = questions[index];
+    qNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+    qText.textContent = q.question;
+    explanationEl.classList.add('hidden');
+    nextBtn.classList.add('hidden');
+    nextBtn.textContent = index < questions.length - 1 ? 'Next Question' : 'See Results';
+
+    optionsEl.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn w-full text-left px-5 py-3.5 rounded-xl border border-gray-200 text-[14px] text-gray-700 font-medium hover:border-hallow-purple hover:bg-hallow-purple-muted/40 transition-all';
+      btn.textContent = opt;
+      btn.dataset.index = String(i);
+      btn.addEventListener('click', () => handleAnswer(i));
+      optionsEl.appendChild(btn);
+    });
+
+    updateProgress();
+  }
+
+  function handleAnswer(selectedIndex: number) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[current];
+    const isCorrect = selectedIndex === q.correctIndex;
+    if (isCorrect) correct++;
+
+    // Style all options
+    optionsEl.querySelectorAll<HTMLButtonElement>('.option-btn').forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === q.correctIndex) {
+        btn.className = btn.className.replace('border-gray-200 text-gray-700', '') +
+          ' border-green-500 bg-green-50 text-green-700';
+      } else if (i === selectedIndex && !isCorrect) {
+        btn.className = btn.className.replace('border-gray-200 text-gray-700', '') +
+          ' border-red-400 bg-red-50 text-red-600';
+      } else {
+        btn.className = btn.className.replace('hover:border-hallow-purple hover:bg-hallow-purple-muted/40', '') +
+          ' opacity-40';
+      }
+    });
+
+    // Show explanation
+    if (q.explanation) {
+      explanationEl.className = `rounded-xl px-5 py-4 text-[13px] leading-relaxed mb-6 ${
+        isCorrect ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+      }`;
+      explanationEl.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Not quite.'}</strong> ${q.explanation}`;
+    } else {
+      explanationEl.className = `rounded-xl px-5 py-4 text-[13px] leading-relaxed mb-6 ${
+        isCorrect ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'
+      }`;
+      explanationEl.textContent = isCorrect ? '✓ Correct!' : '✗ Incorrect.';
+    }
+    explanationEl.classList.remove('hidden');
+    nextBtn.classList.remove('hidden');
+  }
+
+  function showResults() {
+    questionView.classList.add('hidden');
+    resultsView.classList.remove('hidden');
+    progressBar.style.width = '100%';
+    progressLabel.textContent = `${questions.length} / ${questions.length}`;
+
+    const pct = Math.round((correct / questions.length) * 100);
+    const passed = pct >= passing;
+
+    scoreIcon.textContent = passed ? '🎉' : '📖';
+    scoreIcon.className = `w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl ${
+      passed ? 'bg-green-50' : 'bg-amber-50'
+    }`;
+    scoreHeading.textContent = passed ? 'Well done!' : 'Keep studying';
+    scoreSub.textContent = passed
+      ? `You passed with ${pct}% — great work!`
+      : `You scored ${pct}%. A score of ${passing}% is needed to pass. Review the material and try again.`;
+
+    correctCountEl.textContent = String(correct);
+    totalCountEl.textContent = String(questions.length);
+    pctEl.textContent = `${pct}%`;
+    pctEl.className = `text-3xl font-extrabold ${passed ? 'text-green-600' : 'text-amber-600'}`;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    current++;
+    if (current < questions.length) {
+      renderQuestion(current);
+    } else {
+      showResults();
+    }
+  });
+
+  retryBtn.addEventListener('click', () => {
+    current = 0;
+    correct = 0;
+    answered = false;
+    resultsView.classList.add('hidden');
+    questionView.classList.remove('hidden');
+    renderQuestion(0);
+  });
+
+  // Init
+  renderQuestion(0);
+</script>
