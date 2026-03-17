@@ -1,80 +1,235 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import CourseGrid from '../../components/courses/CourseGrid.astro';
 import { mockCourses } from '../../lib/mockData';
+import { formatDuration } from '../../lib/utils';
+
+const categories = [...new Set(mockCourses.map(c => c.category))];
 
 const totalVideos = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'video').length, 0);
-const totalFiles  = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'file').length, 0);
+const totalQuizzes = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'quiz').length, 0);
 ---
 
 <BaseLayout title="Courses" description="Browse all partner training courses.">
+  <div class="flex min-h-[calc(100vh-64px)]">
 
-  <!-- Page Header -->
-  <div class="bg-surface border-b border-gray-100">
-    <div class="px-5 sm:px-10 lg:px-12 py-12">
-      <div class="flex items-center gap-2.5 mb-4">
-        <span class="w-5 h-px bg-hallow-purple"></span>
-        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Courses</span>
+    <!-- ── Left Sidebar ─────────────────────────────────────────── -->
+    <aside class="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 border-r border-gray-100 bg-white sticky top-16 self-start h-[calc(100vh-64px)] overflow-y-auto pt-8 pb-10 px-5">
+
+      <!-- Search -->
+      <div class="relative mb-6">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+        </svg>
+        <input
+          id="course-search"
+          type="search"
+          placeholder="Search…"
+          class="w-full pl-8 pr-3 py-2 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-hallow-purple focus:bg-white transition"
+        />
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-end gap-6">
-        <div class="flex-1">
-          <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
-            Partner Training Library
-          </h1>
-          <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
-            Self-paced courses — videos and resources — to help you get the most from your Hallow partnership.
-          </p>
+
+      <!-- Category nav -->
+      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400 mb-3 px-1">Category</p>
+      <nav class="flex flex-col gap-0.5">
+        <button
+          class="course-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-semibold bg-gray-900 text-white transition-colors"
+          data-category="all"
+        >
+          All Courses
+          <span class="ml-auto float-right text-white/50 font-medium">{mockCourses.length}</span>
+        </button>
+        {categories.map(cat => {
+          const count = mockCourses.filter(c => c.category === cat).length;
+          return (
+            <button
+              class="course-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+              data-category={cat}
+            >
+              {cat}
+              <span class="ml-auto float-right text-gray-400 font-medium">{count}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <!-- Stats -->
+      <div class="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Courses</span>
+          <span class="text-[13px] font-bold text-gray-900">{mockCourses.length}</span>
         </div>
-        <!-- Search -->
-        <div class="relative sm:w-72 shrink-0">
-          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Videos</span>
+          <span class="text-[13px] font-bold text-gray-900">{totalVideos}</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Quizzes</span>
+          <span class="text-[13px] font-bold text-gray-900">{totalQuizzes}</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ──────────────────────────────────────────── -->
+    <div class="flex-1 min-w-0 px-5 sm:px-8 lg:px-10 xl:px-14 py-10">
+
+      <!-- Mobile search + filter row -->
+      <div class="flex items-center gap-3 mb-8 lg:hidden">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
           </svg>
           <input
-            id="course-search"
+            id="course-search-mobile"
             type="search"
             placeholder="Search courses…"
             class="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-hallow-purple focus:ring-2 focus:ring-hallow-purple/10 transition"
           />
         </div>
       </div>
-      <div class="flex gap-6 mt-6 pt-6 border-t border-gray-200">
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{mockCourses.length}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Courses</span>
-        </div>
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{totalVideos}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Videos</span>
-        </div>
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{totalFiles}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Files</span>
-        </div>
+
+      <!-- Heading row -->
+      <div class="flex items-baseline justify-between mb-8">
+        <h1 id="courses-heading" class="text-[22px] font-bold text-gray-900">All Courses</h1>
+        <span id="courses-count" class="text-[13px] text-gray-400 font-medium">{mockCourses.length} courses</span>
+      </div>
+
+      <!-- Empty state -->
+      <div id="courses-empty" class="hidden py-20 text-center">
+        <p class="text-gray-400 text-[15px]">No courses match your search.</p>
+      </div>
+
+      <!-- Grid -->
+      <div id="courses-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-8">
+        {mockCourses.map((course, i) => {
+          const videoBlocks = course.blocks.filter(b => b.blockType === 'video');
+          const totalDuration = videoBlocks.reduce((sum, b) => sum + (b.blockType === 'video' ? b.duration : 0), 0);
+          const stepCount = course.blocks.length;
+          const firstBlock = course.blocks[0];
+          const href = firstBlock ? `/courses/${course.slug}/${firstBlock.slug}` : `/courses/${course.slug}`;
+          const stagger = `stagger-${Math.min(i + 1, 6)}`;
+          return (
+            <a
+              href={href}
+              data-course-title={course.title}
+              data-course-category={course.category}
+              class={`group block animate-fade-up opacity-0 ${stagger}`}
+            >
+              <!-- Thumbnail -->
+              <div class="relative overflow-hidden rounded-xl mb-3" style="aspect-ratio: 16/10;">
+                <img
+                  src={course.thumbnail}
+                  alt={course.title}
+                  class="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                  loading="lazy"
+                />
+                <!-- Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/5 to-transparent"></div>
+
+                <!-- Top badges -->
+                <div class="absolute top-3 left-3 flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-md bg-black/40 backdrop-blur-sm text-white text-[11px] font-semibold tracking-wide">
+                    {course.category}
+                  </span>
+                </div>
+                {course.featured && (
+                  <div class="absolute top-3 right-3">
+                    <span class="px-2.5 py-1 rounded-md bg-hallow-purple text-white text-[11px] font-semibold">
+                      Featured
+                    </span>
+                  </div>
+                )}
+
+                <!-- Bottom-right: step count + duration (MasterClass style) -->
+                <div class="absolute bottom-3 right-3">
+                  <span class="px-2.5 py-1 rounded-md bg-black/60 backdrop-blur-sm text-white text-[11px] font-semibold">
+                    {stepCount} steps · {formatDuration(totalDuration)}
+                  </span>
+                </div>
+
+                <!-- Play hover -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div class="w-12 h-12 rounded-full bg-white/95 shadow-xl flex items-center justify-center">
+                    <svg class="w-4 h-4 text-hallow-purple ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text -->
+              <h3 class="font-semibold text-gray-900 text-[15px] leading-snug mb-1 group-hover:text-hallow-purple transition-colors">
+                {course.title}
+              </h3>
+              <p class="text-gray-400 text-[13px] leading-relaxed line-clamp-2">
+                {course.description}
+              </p>
+            </a>
+          );
+        })}
       </div>
     </div>
   </div>
 
-  <div class="px-5 sm:px-10 lg:px-12 py-12">
-    <div id="courses-empty" class="hidden py-16 text-center text-gray-400 text-[15px]">No courses match your search.</div>
-    <CourseGrid courses={mockCourses} />
-  </div>
-
   <script>
-    const input = document.getElementById('course-search') as HTMLInputElement | null;
-    const empty = document.getElementById('courses-empty') as HTMLElement | null;
+    // ── Shared filter state ────────────────────────────────────────
+    let activeCategory = 'all';
+    let searchQuery = '';
 
-    input?.addEventListener('input', () => {
-      const query = input.value.trim().toLowerCase();
-      const cards = document.querySelectorAll<HTMLElement>('[data-course-title]');
+    const grid       = document.getElementById('courses-grid') as HTMLElement;
+    const empty      = document.getElementById('courses-empty') as HTMLElement;
+    const heading    = document.getElementById('courses-heading') as HTMLElement;
+    const countEl    = document.getElementById('courses-count') as HTMLElement;
+    const catBtns    = document.querySelectorAll<HTMLButtonElement>('.course-cat-btn');
+    const searchEl   = document.getElementById('course-search') as HTMLInputElement | null;
+    const searchMob  = document.getElementById('course-search-mobile') as HTMLInputElement | null;
+
+    function applyFilters() {
+      const cards = grid.querySelectorAll<HTMLElement>('[data-course-title]');
       let visible = 0;
+
       cards.forEach(card => {
-        const title = (card.dataset.courseTitle ?? '').toLowerCase();
-        const show = !query || title.includes(query);
+        const title    = (card.dataset.courseTitle ?? '').toLowerCase();
+        const category = card.dataset.courseCategory ?? '';
+        const matchCat = activeCategory === 'all' || category === activeCategory;
+        const matchQ   = !searchQuery || title.includes(searchQuery);
+        const show = matchCat && matchQ;
         card.style.display = show ? '' : 'none';
         if (show) visible++;
       });
-      if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+
+      empty.style.display = visible === 0 ? 'block' : 'none';
+      grid.style.display  = visible === 0 ? 'none' : '';
+      countEl.textContent = `${visible} course${visible !== 1 ? 's' : ''}`;
+    }
+
+    // Category buttons
+    catBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.category ?? 'all';
+        heading.textContent = activeCategory === 'all' ? 'All Courses' : activeCategory;
+
+        // Active state styling
+        catBtns.forEach(b => {
+          if (b === btn) {
+            b.className = 'course-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-semibold bg-gray-900 text-white transition-colors';
+          } else {
+            b.className = 'course-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors';
+          }
+        });
+
+        applyFilters();
+      });
     });
+
+    // Search inputs (desktop + mobile sync)
+    function onSearch(val: string) {
+      searchQuery = val.trim().toLowerCase();
+      if (searchEl && searchEl !== document.activeElement) searchEl.value = val;
+      if (searchMob && searchMob !== document.activeElement) searchMob.value = val;
+      applyFilters();
+    }
+
+    searchEl?.addEventListener('input', () => onSearch(searchEl.value));
+    searchMob?.addEventListener('input', () => onSearch(searchMob.value));
   </script>
 </BaseLayout>
