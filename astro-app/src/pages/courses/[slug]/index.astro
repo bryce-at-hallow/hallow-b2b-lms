@@ -9,8 +9,8 @@ export function getStaticPaths() {
 }
 
 const { course } = Astro.props;
-const firstLesson = course.lessons[0];
+const firstBlock = course.blocks[0];
 
-// Redirect to first lesson
-return Astro.redirect(`/courses/${course.slug}/${firstLesson.slug}`);
+// Redirect to first block
+return Astro.redirect(`/courses/${course.slug}/${firstBlock.slug}`);
 ---

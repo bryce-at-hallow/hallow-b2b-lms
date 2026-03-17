@@ -8,6 +8,9 @@ interface Props {
 }
 
 const { course, currentLessonSlug } = Astro.props;
+
+const videoCount = course.blocks.filter(b => b.blockType === 'video').length;
+const fileCount  = course.blocks.filter(b => b.blockType === 'file').length;
 ---
 
 <div class="flex flex-col h-full">
@@ -23,22 +26,38 @@ const { course, currentLessonSlug } = Astro.props;
       All Courses
     </a>
     <h2 class="font-semibold text-gray-900 text-[13px] leading-snug">{course.title}</h2>
-    <p class="text-[11px] text-gray-400 font-medium mt-1">{course.lessons.length} lessons</p>
+    <div class="flex items-center gap-3 mt-1.5">
+      {videoCount > 0 && (
+        <span class="flex items-center gap-1 text-[11px] text-gray-400 font-medium">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          {videoCount} video{videoCount !== 1 ? 's' : ''}
+        </span>
+      )}
+      {fileCount > 0 && (
+        <span class="flex items-center gap-1 text-[11px] text-gray-400 font-medium">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          {fileCount} file{fileCount !== 1 ? 's' : ''}
+        </span>
+      )}
+    </div>
   </div>
 
-  <!-- Lesson List -->
+  <!-- Block List -->
   <nav class="flex-1 overflow-y-auto py-3">
-    {course.lessons.map((lesson, index) => {
-      const isActive = lesson.slug === currentLessonSlug;
+    {course.blocks.map((block, index) => {
+      const isActive = block.slug === currentLessonSlug;
+      const isFile = block.blockType === 'file';
+
       return (
         <a
-          href={`/courses/${course.slug}/${lesson.slug}`}
+          href={`/courses/${course.slug}/${block.slug}`}
           class={`flex items-start gap-3 px-5 py-3.5 group transition-colors ${
-            isActive
-              ? 'bg-hallow-purple-muted'
-              : 'hover:bg-gray-50'
+            isActive ? 'bg-hallow-purple-muted' : 'hover:bg-gray-50'
           }`}
         >
+          <!-- Step number -->
           <div class={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 mt-0.5 transition-colors ${
             isActive
               ? 'bg-hallow-purple text-white'
@@ -46,18 +65,32 @@ const { course, currentLessonSlug } = Astro.props;
           }`}>
             {index + 1}
           </div>
+
           <div class="min-w-0 flex-1">
             <p class={`text-[13px] leading-snug font-medium ${
               isActive ? 'text-hallow-purple' : 'text-gray-700'
             }`}>
-              {lesson.title}
+              {block.title}
             </p>
-            <p class="text-[11px] text-gray-400 mt-0.5">{formatDuration(lesson.duration)}</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">
+              {isFile
+                ? `${block.fileType}${block.fileSize ? ` · ${block.fileSize}` : ''}`
+                : formatDuration(block.duration)
+              }
+            </p>
           </div>
+
+          <!-- Active indicator icon -->
           {isActive && (
-            <svg class="w-3.5 h-3.5 text-hallow-purple shrink-0 mt-1" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
+            isFile ? (
+              <svg class="w-3.5 h-3.5 text-hallow-purple shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            ) : (
+              <svg class="w-3.5 h-3.5 text-hallow-purple shrink-0 mt-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            )
           )}
         </a>
       );

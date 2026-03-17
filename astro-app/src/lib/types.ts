@@ -1,14 +1,31 @@
-export interface Lesson {
+// ── Course content blocks ─────────────────────────────────────
+
+interface BlockBase {
   _id: string;
   title: string;
   slug: string;
-  description: string;
+  description?: string;
+}
+
+export interface VideoBlock extends BlockBase {
+  blockType: 'video';
   videoProvider: 'vimeo' | 'youtube' | 'wistia' | 'direct';
   videoId: string;
   duration: number; // seconds
   transcript?: string;
   downloadableAssets?: { title: string; url: string; fileType: string }[];
 }
+
+export interface FileBlock extends BlockBase {
+  blockType: 'file';
+  fileUrl: string;
+  fileType: string; // 'PDF', 'DOCX', 'ZIP', etc.
+  fileSize?: string; // e.g. '2.4 MB'
+}
+
+export type CourseBlock = VideoBlock | FileBlock;
+
+// ── Course ────────────────────────────────────────────────────
 
 export interface Course {
   _id: string;
@@ -17,11 +34,13 @@ export interface Course {
   description: string;
   thumbnail: string;
   category: string;
-  lessons: Lesson[];
+  blocks: CourseBlock[];
   featured: boolean;
   spotlight?: boolean;
   publishedAt: string;
 }
+
+// ── Webinar ───────────────────────────────────────────────────
 
 export interface Webinar {
   _id: string;
@@ -40,16 +59,7 @@ export interface Webinar {
   spotlight?: boolean;
 }
 
-export interface LastWatched {
-  courseSlug: string;
-  lessonSlug: string;
-  courseTitle: string;
-  lessonTitle: string;
-  lessonIndex: number;
-  totalLessons: number;
-  thumbnail: string;
-  coursePath: string;
-}
+// ── Resource ──────────────────────────────────────────────────
 
 export interface Resource {
   _id: string;
@@ -63,5 +73,18 @@ export interface Resource {
   thumbnail?: string;
   featured: boolean;
   publishedAt: string;
-  fileType?: string; // e.g. "PDF", "DOCX"
+  fileType?: string;
+}
+
+// ── localStorage ──────────────────────────────────────────────
+
+export interface LastWatched {
+  courseSlug: string;
+  lessonSlug: string;
+  courseTitle: string;
+  lessonTitle: string;
+  lessonIndex: number;
+  totalLessons: number;
+  thumbnail: string;
+  coursePath: string;
 }
