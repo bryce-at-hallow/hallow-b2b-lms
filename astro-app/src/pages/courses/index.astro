@@ -1,12 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { mockCourses } from '../../lib/mockData';
+import { sanityClient } from '../../lib/sanity';
+import { ALL_COURSES_QUERY } from '../../lib/queries';
 import { formatDuration } from '../../lib/utils';
+import type { Course } from '../../lib/types';
 
-const categories = [...new Set(mockCourses.map(c => c.category))];
+const courses: Course[] = await sanityClient.fetch(ALL_COURSES_QUERY);
+const mockCourses = courses; // alias so the rest of the template is unchanged
 
-const totalVideos = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'video').length, 0);
-const totalQuizzes = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'quiz').length, 0);
+const categories = [...new Set(courses.map(c => c.category))];
+
+const totalVideos  = courses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'video').length, 0);
+const totalQuizzes = courses.reduce((sum, c) => sum + c.blocks.filter(b => b.blockType === 'quiz').length, 0);
 ---
 
 <BaseLayout title="Courses" description="Browse all partner training courses.">

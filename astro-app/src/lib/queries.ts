@@ -1,5 +1,34 @@
 // ── Courses ───────────────────────────────────────────────────
 
+// Normalizes Sanity's _type/blockType and _key/_id to match our TypeScript types
+const BLOCK_FRAGMENT = `
+  "_id": _key,
+  "blockType": select(
+    _type == "videoBlock" => "video",
+    _type == "fileBlock"  => "file",
+    _type == "quizBlock"  => "quiz"
+  ),
+  "slug": slug.current,
+  title,
+  description,
+  videoProvider,
+  videoId,
+  duration,
+  transcript,
+  downloadableAssets[] { title, "url": file.asset->url, fileType },
+  "fileUrl": file.asset->url,
+  fileType,
+  fileSize,
+  passingScore,
+  questions[] {
+    "_id": _key,
+    question,
+    options,
+    correctIndex,
+    explanation,
+  },
+`;
+
 export const ALL_COURSES_QUERY = `
   *[_type == "course"] | order(publishedAt desc) {
     _id,
@@ -11,32 +40,7 @@ export const ALL_COURSES_QUERY = `
     featured,
     spotlight,
     publishedAt,
-    blocks[] {
-      _type,
-      _key,
-      title,
-      "slug": slug.current,
-      description,
-      // VideoBlock fields
-      videoProvider,
-      videoId,
-      duration,
-      transcript,
-      downloadableAssets[] { title, "url": asset->url, fileType },
-      // FileBlock fields
-      "fileUrl": file.asset->url,
-      fileType,
-      fileSize,
-      // QuizBlock fields
-      passingScore,
-      questions[] {
-        _key,
-        question,
-        options,
-        correctIndex,
-        explanation,
-      },
-    }
+    blocks[] { ${BLOCK_FRAGMENT} }
   }
 `;
 
@@ -51,29 +55,7 @@ export const COURSE_BY_SLUG_QUERY = `
     featured,
     spotlight,
     publishedAt,
-    blocks[] {
-      _type,
-      _key,
-      title,
-      "slug": slug.current,
-      description,
-      videoProvider,
-      videoId,
-      duration,
-      transcript,
-      downloadableAssets[] { title, "url": asset->url, fileType },
-      "fileUrl": file.asset->url,
-      fileType,
-      fileSize,
-      passingScore,
-      questions[] {
-        _key,
-        question,
-        options,
-        correctIndex,
-        explanation,
-      },
-    }
+    blocks[] { ${BLOCK_FRAGMENT} }
   }
 `;
 
@@ -140,7 +122,8 @@ export const HOME_QUERY = `
       scheduledAt, status, registrationUrl, recordingUrl,
     },
     "featuredResources": *[_type == "resource" && featured == true] | order(publishedAt desc) [0..3] {
-      _id, title, "slug": slug.current, category, resourceType, fileType, "file": file.asset->url, externalUrl,
+      _id, title, "slug": slug.current, category, resourceType, fileType,
+      "file": file.asset->url, externalUrl,
     },
   }
 `;

@@ -1,9 +1,14 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { mockResources } from '../../lib/mockData';
+import { sanityClient } from '../../lib/sanity';
+import { ALL_RESOURCES_QUERY } from '../../lib/queries';
 import { categoryLabel } from '../../lib/utils';
+import type { Resource } from '../../lib/types';
 
-const categories = [...new Set(mockResources.map(r => r.category))];
+const resources: Resource[] = await sanityClient.fetch(ALL_RESOURCES_QUERY);
+const mockResources = resources; // alias so the rest of the template is unchanged
+
+const categories = [...new Set(resources.map(r => r.category))];
 
 // Color palette per category
 const catColors: Record<string, { bg: string; text: string; dot: string }> = {

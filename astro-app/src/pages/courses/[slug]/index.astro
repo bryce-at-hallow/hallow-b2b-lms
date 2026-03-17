@@ -1,8 +1,11 @@
 ---
-import { mockCourses } from '../../../lib/mockData';
+import { sanityClient } from '../../../lib/sanity';
+import { ALL_COURSES_QUERY } from '../../../lib/queries';
+import type { Course } from '../../../lib/types';
 
-export function getStaticPaths() {
-  return mockCourses.map(course => ({
+export async function getStaticPaths() {
+  const courses: Course[] = await sanityClient.fetch(ALL_COURSES_QUERY);
+  return courses.map(course => ({
     params: { slug: course.slug },
     props: { course },
   }));
@@ -11,6 +14,5 @@ export function getStaticPaths() {
 const { course } = Astro.props;
 const firstBlock = course.blocks[0];
 
-// Redirect to first block
 return Astro.redirect(`/courses/${course.slug}/${firstBlock.slug}`);
 ---

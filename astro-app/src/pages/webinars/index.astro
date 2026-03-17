@@ -1,10 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { mockWebinars } from '../../lib/mockData';
+import { sanityClient } from '../../lib/sanity';
+import { ALL_WEBINARS_QUERY } from '../../lib/queries';
 import { formatDurationMinutes } from '../../lib/utils';
+import type { Webinar } from '../../lib/types';
 
-const upcoming = mockWebinars.filter(w => w.status === 'upcoming');
-const past     = mockWebinars.filter(w => w.status === 'past');
+const webinars: Webinar[] = await sanityClient.fetch(ALL_WEBINARS_QUERY);
+const mockWebinars = webinars; // alias so the rest of the template is unchanged
+
+const upcoming = webinars.filter(w => w.status === 'upcoming');
+const past     = webinars.filter(w => w.status === 'past');
 
 function fmtDay(iso: string) {
   const d = new Date(iso);

@@ -2,13 +2,15 @@
 import CourseLayout from '../../../layouts/CourseLayout.astro';
 import VideoPlayer from '../../../components/courses/VideoPlayer.astro';
 import QuizPlayer from '../../../components/courses/QuizPlayer.astro';
-import { mockCourses } from '../../../lib/mockData';
+import { sanityClient } from '../../../lib/sanity';
+import { ALL_COURSES_QUERY } from '../../../lib/queries';
 import { formatDuration } from '../../../lib/utils';
-import type { VideoBlock, FileBlock, QuizBlock } from '../../../lib/types';
+import type { Course, VideoBlock, FileBlock, QuizBlock } from '../../../lib/types';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const courses: Course[] = await sanityClient.fetch(ALL_COURSES_QUERY);
   const paths = [];
-  for (const course of mockCourses) {
+  for (const course of courses) {
     for (const block of course.blocks) {
       paths.push({
         params: { slug: course.slug, lessonSlug: block.slug },
