@@ -12,7 +12,7 @@ const categories = [...new Set(mockResources.map(r => r.category))];
 
   <!-- Page Header -->
   <div class="bg-surface border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="px-5 sm:px-10 lg:px-12 py-12">
       <div class="flex items-center gap-2.5 mb-4">
         <span class="w-5 h-px bg-hallow-purple"></span>
         <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Resources</span>
@@ -36,7 +36,7 @@ const categories = [...new Set(mockResources.map(r => r.category))];
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="px-5 sm:px-10 lg:px-12 py-12">
     <ResourceFilters categories={categories} />
 
     {mockResources.length === 0 ? (

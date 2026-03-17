@@ -11,6 +11,7 @@ export const mockCourses: Course[] = [
     featured: true,
     publishedAt: '2024-01-15',
     blocks: [
+      // ── Section 1: Your Partnership ──────────────────────────
       {
         _id: 'block-1-1',
         blockType: 'video',
@@ -31,6 +32,7 @@ export const mockCourses: Course[] = [
         fileType: 'PDF',
         fileSize: '1.2 MB',
       },
+      // ── Section 2: Account Setup ──────────────────────────────
       {
         _id: 'block-1-3',
         blockType: 'video',
@@ -40,9 +42,6 @@ export const mockCourses: Course[] = [
         videoProvider: 'youtube',
         videoId: 'dQw4w9WgXcQ',
         duration: 720,
-        downloadableAssets: [
-          { title: 'Account Setup Checklist', url: '#', fileType: 'PDF' },
-        ],
       },
       {
         _id: 'block-1-4',
@@ -56,68 +55,14 @@ export const mockCourses: Course[] = [
       },
       {
         _id: 'block-1-5',
-        blockType: 'video',
-        title: 'Inviting Your Community',
-        slug: 'inviting-your-community',
-        description: 'How to generate and distribute invite codes to your parishioners or students.',
-        videoProvider: 'youtube',
-        videoId: 'dQw4w9WgXcQ',
-        duration: 600,
-      },
-      {
-        _id: 'block-1-6',
-        blockType: 'file',
-        title: 'Parish Invite Email Templates',
-        slug: 'parish-invite-email-templates',
-        description: 'Ready-to-send email templates for inviting parishioners to join Hallow. Includes Lent, Advent, and general onboarding versions.',
-        fileUrl: '#',
-        fileType: 'DOCX',
-        fileSize: '58 KB',
-      },
-      {
-        _id: 'block-1-7',
-        blockType: 'video',
-        title: 'Tracking Engagement & Analytics',
-        slug: 'tracking-engagement-and-analytics',
-        description: 'Understanding your dashboard metrics and how to measure community engagement.',
-        videoProvider: 'youtube',
-        videoId: 'dQw4w9WgXcQ',
-        duration: 840,
-      },
-      {
-        _id: 'block-1-8',
         blockType: 'quiz',
-        title: 'Getting Started: Knowledge Check',
-        slug: 'getting-started-knowledge-check',
-        description: 'Test your understanding of the Hallow partnership setup process.',
+        title: 'Check-In: Account Setup',
+        slug: 'check-in-account-setup',
+        description: 'Make sure you have the account basics down before moving on.',
         passingScore: 75,
         questions: [
           {
             _id: 'q-1-1',
-            question: 'Where do you generate invite codes for your parishioners?',
-            options: [
-              'The Hallow mobile app',
-              'The partner admin dashboard',
-              'By emailing parishes@hallow.app',
-              'The Hallow website',
-            ],
-            correctIndex: 1,
-            explanation: 'Invite codes are generated and managed from the partner admin dashboard under the "Community" section.',
-          },
-          {
-            _id: 'q-1-2',
-            question: 'Which metric in the dashboard shows how many parishioners are praying daily?',
-            options: [
-              'Total Users',
-              'Daily Active Users (DAU)',
-              'Sessions This Week',
-              'Invite Redemption Rate',
-            ],
-            correctIndex: 1,
-            explanation: 'Daily Active Users (DAU) shows how many of your community members opened the app and prayed on any given day.',
-          },
-          {
-            _id: 'q-1-3',
             question: 'What is the recommended first step after your parish account is created?',
             options: [
               'Run a Lent campaign immediately',
@@ -129,8 +74,108 @@ export const mockCourses: Course[] = [
             explanation: 'The account setup checklist ensures all your settings are correctly configured before you invite your community.',
           },
           {
+            _id: 'q-1-2',
+            question: 'Where do you access the partner admin dashboard?',
+            options: [
+              'Inside the Hallow mobile app under Settings',
+              'At partners.hallow.com in your browser',
+              'Through the App Store',
+              'By emailing parishes@hallow.app for a link',
+            ],
+            correctIndex: 1,
+            explanation: 'The partner admin dashboard is a web-based tool available at partners.hallow.com — separate from the Hallow consumer app.',
+          },
+        ],
+      },
+      // ── Section 3: Community Onboarding ──────────────────────
+      {
+        _id: 'block-1-6',
+        blockType: 'video',
+        title: 'Inviting Your Community',
+        slug: 'inviting-your-community',
+        description: 'How to generate and distribute invite codes to your parishioners or students.',
+        videoProvider: 'youtube',
+        videoId: 'dQw4w9WgXcQ',
+        duration: 600,
+      },
+      {
+        _id: 'block-1-7',
+        blockType: 'file',
+        title: 'Parish Invite Email Templates',
+        slug: 'parish-invite-email-templates',
+        description: 'Ready-to-send email templates for inviting parishioners to join Hallow. Includes Lent, Advent, and general onboarding versions.',
+        fileUrl: '#',
+        fileType: 'DOCX',
+        fileSize: '58 KB',
+      },
+      {
+        _id: 'block-1-8',
+        blockType: 'quiz',
+        title: 'Check-In: Community Onboarding',
+        slug: 'check-in-community-onboarding',
+        description: 'Confirm you know how to get your parishioners up and running.',
+        passingScore: 75,
+        questions: [
+          {
+            _id: 'q-1-3',
+            question: 'Where do you generate invite codes for your parishioners?',
+            options: [
+              'The Hallow mobile app',
+              'The partner admin dashboard',
+              'By emailing parishes@hallow.app',
+              'The Hallow website',
+            ],
+            correctIndex: 1,
+            explanation: 'Invite codes are generated and managed from the partner admin dashboard under the "Community" section.',
+          },
+          {
             _id: 'q-1-4',
-            question: 'Where can partners reach for support?',
+            question: 'Which of these is the most effective channel for distributing invite codes to parishioners?',
+            options: [
+              'Posting the code on a public social media page',
+              'Printing codes in the Sunday bulletin and announcing from the pulpit',
+              'Sharing the code exclusively on the parish website',
+              'Only sending via email to registered members',
+            ],
+            correctIndex: 1,
+            explanation: 'Combining the Sunday bulletin with a verbal announcement from the pastor achieves the widest reach across all age groups.',
+          },
+        ],
+      },
+      // ── Section 4: Analytics ─────────────────────────────────
+      {
+        _id: 'block-1-9',
+        blockType: 'video',
+        title: 'Tracking Engagement & Analytics',
+        slug: 'tracking-engagement-and-analytics',
+        description: 'Understanding your dashboard metrics and how to measure community engagement.',
+        videoProvider: 'youtube',
+        videoId: 'dQw4w9WgXcQ',
+        duration: 840,
+      },
+      {
+        _id: 'block-1-10',
+        blockType: 'quiz',
+        title: 'Final Knowledge Check',
+        slug: 'getting-started-final-knowledge-check',
+        description: 'Put it all together — test your full understanding of the Hallow partnership.',
+        passingScore: 75,
+        questions: [
+          {
+            _id: 'q-1-5',
+            question: 'Which metric in the dashboard shows how many parishioners are praying daily?',
+            options: [
+              'Total Users',
+              'Daily Active Users (DAU)',
+              'Sessions This Week',
+              'Invite Redemption Rate',
+            ],
+            correctIndex: 1,
+            explanation: 'Daily Active Users (DAU) shows how many of your community members opened the app and prayed on any given day.',
+          },
+          {
+            _id: 'q-1-6',
+            question: 'Where can partners reach out for support?',
             options: [
               'support@hallow.com',
               'parishes@hallow.app',
@@ -139,6 +184,18 @@ export const mockCourses: Course[] = [
             ],
             correctIndex: 1,
             explanation: 'Parish partners can reach the Hallow partner success team at parishes@hallow.app.',
+          },
+          {
+            _id: 'q-1-7',
+            question: 'A high Invite Redemption Rate means:',
+            options: [
+              'Many users have left the app',
+              'A large portion of invited parishioners successfully created an account',
+              'Your invite codes have expired',
+              'Parishioners are spending more time in the app',
+            ],
+            correctIndex: 1,
+            explanation: 'Invite Redemption Rate is the percentage of distributed codes that were used to create an account — higher is better.',
           },
         ],
       },
@@ -154,6 +211,7 @@ export const mockCourses: Course[] = [
     featured: true,
     publishedAt: '2024-02-01',
     blocks: [
+      // ── Section 1: Prayer Culture ─────────────────────────────
       {
         _id: 'block-2-1',
         blockType: 'video',
@@ -166,6 +224,41 @@ export const mockCourses: Course[] = [
       },
       {
         _id: 'block-2-2',
+        blockType: 'quiz',
+        title: 'Check-In: Prayer Culture',
+        slug: 'check-in-prayer-culture',
+        description: 'Quick check on the foundations of building a prayer culture.',
+        passingScore: 80,
+        questions: [
+          {
+            _id: 'q-2-1',
+            question: 'What is the single most important factor in building a sustained culture of prayer?',
+            options: [
+              'Buying premium subscriptions for everyone',
+              'Consistent, visible leadership modeling prayer habits',
+              'Running a social media campaign',
+              'Setting up automated daily push notifications',
+            ],
+            correctIndex: 1,
+            explanation: 'When parish leaders and pastors visibly participate in prayer — praying together, sharing reflections — the community follows. Leadership behavior is the strongest predictor of adoption.',
+          },
+          {
+            _id: 'q-2-2',
+            question: 'What does DAU/MAU ratio indicate about your community?',
+            options: [
+              'How many people downloaded the app',
+              'The ratio of daily to monthly active users — a measure of habit strength',
+              'Total prayer minutes logged',
+              'Number of new sign-ups vs. cancellations',
+            ],
+            correctIndex: 1,
+            explanation: 'A high DAU/MAU ratio means your community is praying consistently, not just occasionally — a strong indicator of habit formation.',
+          },
+        ],
+      },
+      // ── Section 2: Small Groups ───────────────────────────────
+      {
+        _id: 'block-2-3',
         blockType: 'video',
         title: 'Hallow for Small Groups',
         slug: 'hallow-for-small-groups',
@@ -175,7 +268,7 @@ export const mockCourses: Course[] = [
         duration: 660,
       },
       {
-        _id: 'block-2-3',
+        _id: 'block-2-4',
         blockType: 'file',
         title: 'Small Group Facilitator Guide',
         slug: 'small-group-facilitator-guide',
@@ -185,25 +278,15 @@ export const mockCourses: Course[] = [
         fileSize: '890 KB',
       },
       {
-        _id: 'block-2-4',
-        blockType: 'video',
-        title: 'Seasonal Prayer Campaigns',
-        slug: 'seasonal-prayer-campaigns',
-        description: 'Running successful Advent, Lent, and other liturgical season challenges.',
-        videoProvider: 'youtube',
-        videoId: 'dQw4w9WgXcQ',
-        duration: 780,
-      },
-      {
         _id: 'block-2-5',
         blockType: 'quiz',
-        title: 'Community Leadership: Knowledge Check',
-        slug: 'community-leadership-knowledge-check',
-        description: 'Check your understanding of leading prayer and running campaigns with Hallow.',
+        title: 'Check-In: Small Groups',
+        slug: 'check-in-small-groups',
+        description: 'Test your understanding of running effective small group prayer with Hallow.',
         passingScore: 80,
         questions: [
           {
-            _id: 'q-2-1',
+            _id: 'q-2-3',
             question: 'Which Hallow feature is most effective for small faith-sharing groups?',
             options: [
               'The Daily Calm meditation',
@@ -215,7 +298,40 @@ export const mockCourses: Course[] = [
             explanation: 'Curated playlists let you select and share specific Hallow content tailored to your group\'s theme or season.',
           },
           {
-            _id: 'q-2-2',
+            _id: 'q-2-4',
+            question: 'For an RCIA group, which content type in Hallow is most appropriate to use as a session opener?',
+            options: [
+              'A long-form audio retreat (60+ minutes)',
+              'A short guided prayer or Scripture reflection (5–10 minutes)',
+              'A podcast-style discussion on theology',
+              'A sleep meditation',
+            ],
+            correctIndex: 1,
+            explanation: 'Short guided prayers or Scripture reflections are ideal for opening small group sessions — they center the group without consuming the whole meeting time.',
+          },
+        ],
+      },
+      // ── Section 3: Seasonal Campaigns ────────────────────────
+      {
+        _id: 'block-2-6',
+        blockType: 'video',
+        title: 'Seasonal Prayer Campaigns',
+        slug: 'seasonal-prayer-campaigns',
+        description: 'Running successful Advent, Lent, and other liturgical season challenges.',
+        videoProvider: 'youtube',
+        videoId: 'dQw4w9WgXcQ',
+        duration: 780,
+      },
+      {
+        _id: 'block-2-7',
+        blockType: 'quiz',
+        title: 'Final Knowledge Check',
+        slug: 'community-leadership-final-knowledge-check',
+        description: 'Bring it all together — campaigns, metrics, and community strategy.',
+        passingScore: 80,
+        questions: [
+          {
+            _id: 'q-2-5',
             question: 'When is the best time to launch a Lent prayer campaign with your community?',
             options: [
               'Ash Wednesday itself',
@@ -227,16 +343,28 @@ export const mockCourses: Course[] = [
             explanation: 'Launching 4–6 weeks ahead gives you time to build awareness, distribute invite codes, and generate momentum before Lent begins.',
           },
           {
-            _id: 'q-2-3',
-            question: 'What does DAU/MAU ratio indicate about your community?',
+            _id: 'q-2-6',
+            question: 'Which combination of promotion channels reaches the broadest parish audience during Advent?',
             options: [
-              'How many people downloaded the app',
-              'The ratio of daily to monthly active users — a measure of habit strength',
-              'Total prayer minutes logged',
-              'Number of new sign-ups vs. cancellations',
+              'Email only',
+              'Instagram and Facebook only',
+              'Sunday bulletin, pulpit announcement, and parish email list',
+              'Parish website and app notification',
+            ],
+            correctIndex: 2,
+            explanation: 'Reaching parishioners through multiple touchpoints — especially the in-person Sunday announcement — dramatically increases participation.',
+          },
+          {
+            _id: 'q-2-7',
+            question: 'What does a declining DAU trend after the first two weeks of Lent typically indicate?',
+            options: [
+              'The campaign was a complete failure',
+              'Normal drop-off after initial excitement — a re-engagement push is needed',
+              'Users have completed the full Lent journey',
+              'The invite codes have expired',
             ],
             correctIndex: 1,
-            explanation: 'A high DAU/MAU ratio means your community is praying consistently, not just occasionally — a strong indicator of habit formation.',
+            explanation: 'Engagement naturally dips after the launch excitement fades. A mid-campaign re-engagement push (bulletin reminder, pastor mention) typically recovers momentum.',
           },
         ],
       },
@@ -252,6 +380,7 @@ export const mockCourses: Course[] = [
     featured: false,
     publishedAt: '2024-03-10',
     blocks: [
+      // ── Section 1: Educator Overview ─────────────────────────
       {
         _id: 'block-3-1',
         blockType: 'video',
@@ -264,50 +393,10 @@ export const mockCourses: Course[] = [
       },
       {
         _id: 'block-3-2',
-        blockType: 'video',
-        title: 'Classroom Integration Strategies',
-        slug: 'classroom-integration-strategies',
-        description: 'Practical ways to use Hallow in religion class, homeroom, and beyond.',
-        videoProvider: 'youtube',
-        videoId: 'dQw4w9WgXcQ',
-        duration: 840,
-      },
-      {
-        _id: 'block-3-3',
-        blockType: 'file',
-        title: 'Classroom Integration Guide',
-        slug: 'classroom-integration-guide',
-        description: 'A printable guide for teachers covering how to integrate Hallow into daily classroom prayer, grades K-12.',
-        fileUrl: '#',
-        fileType: 'PDF',
-        fileSize: '1.1 MB',
-      },
-      {
-        _id: 'block-3-4',
-        blockType: 'file',
-        title: 'Weekly Prayer Schedule Template',
-        slug: 'weekly-prayer-schedule-template',
-        description: 'An editable Word document for building a weekly classroom prayer schedule around Hallow content.',
-        fileUrl: '#',
-        fileType: 'DOCX',
-        fileSize: '72 KB',
-      },
-      {
-        _id: 'block-3-5',
-        blockType: 'video',
-        title: 'Student Engagement & Reporting',
-        slug: 'student-engagement-and-reporting',
-        description: 'Using the school dashboard to monitor participation and share reports with administration.',
-        videoProvider: 'youtube',
-        videoId: 'dQw4w9WgXcQ',
-        duration: 600,
-      },
-      {
-        _id: 'block-3-6',
         blockType: 'quiz',
-        title: 'Catholic Schools: Knowledge Check',
-        slug: 'catholic-schools-knowledge-check',
-        description: 'Confirm your readiness to implement Hallow in your school community.',
+        title: 'Check-In: Educator Overview',
+        slug: 'check-in-educator-overview',
+        description: 'Make sure you have the fundamentals of the school partnership.',
         passingScore: 80,
         questions: [
           {
@@ -324,6 +413,104 @@ export const mockCourses: Course[] = [
           },
           {
             _id: 'q-3-2',
+            question: 'What separates the school educator dashboard from the parish partner dashboard?',
+            options: [
+              'The school dashboard has a different color scheme',
+              'The school dashboard includes classroom and grade-level groupings and age-filtered content',
+              'They are identical — same features for all partner types',
+              'The school dashboard only works on desktop browsers',
+            ],
+            correctIndex: 1,
+            explanation: 'The educator dashboard is tailored for school workflows — it organizes users by classroom/grade and surfaces age-appropriate content recommendations.',
+          },
+        ],
+      },
+      // ── Section 2: Classroom Integration ─────────────────────
+      {
+        _id: 'block-3-3',
+        blockType: 'video',
+        title: 'Classroom Integration Strategies',
+        slug: 'classroom-integration-strategies',
+        description: 'Practical ways to use Hallow in religion class, homeroom, and beyond.',
+        videoProvider: 'youtube',
+        videoId: 'dQw4w9WgXcQ',
+        duration: 840,
+      },
+      {
+        _id: 'block-3-4',
+        blockType: 'file',
+        title: 'Classroom Integration Guide',
+        slug: 'classroom-integration-guide',
+        description: 'A printable guide for teachers covering how to integrate Hallow into daily classroom prayer, grades K-12.',
+        fileUrl: '#',
+        fileType: 'PDF',
+        fileSize: '1.1 MB',
+      },
+      {
+        _id: 'block-3-5',
+        blockType: 'file',
+        title: 'Weekly Prayer Schedule Template',
+        slug: 'weekly-prayer-schedule-template',
+        description: 'An editable Word document for building a weekly classroom prayer schedule around Hallow content.',
+        fileUrl: '#',
+        fileType: 'DOCX',
+        fileSize: '72 KB',
+      },
+      {
+        _id: 'block-3-6',
+        blockType: 'quiz',
+        title: 'Check-In: Classroom Integration',
+        slug: 'check-in-classroom-integration',
+        description: 'Confirm you\'re ready to bring Hallow into your classroom.',
+        passingScore: 80,
+        questions: [
+          {
+            _id: 'q-3-3',
+            question: 'What is the recommended daily prayer window for classroom Hallow use?',
+            options: [
+              '30–45 minutes at the start of religion class',
+              '5–10 minutes at the start or end of homeroom',
+              'A full free period once a week',
+              'Only during Mass preparation',
+            ],
+            correctIndex: 1,
+            explanation: 'Short, consistent daily sessions (5–10 minutes) build stronger prayer habits than infrequent longer sessions. Homeroom is the ideal slot.',
+          },
+          {
+            _id: 'q-3-4',
+            question: 'When assigning Hallow content to elementary students (K-5), you should:',
+            options: [
+              'Use the same content as high school students — it\'s all appropriate',
+              'Filter by age group in the educator dashboard to surface K-5 appropriate content',
+              'Only use the "Sleep Meditations" playlist',
+              'Ask students to find their own content in the app',
+            ],
+            correctIndex: 1,
+            explanation: 'The educator dashboard\'s age filter ensures you only surface content that is appropriate and engaging for your grade level.',
+          },
+        ],
+      },
+      // ── Section 3: Reporting ──────────────────────────────────
+      {
+        _id: 'block-3-7',
+        blockType: 'video',
+        title: 'Student Engagement & Reporting',
+        slug: 'student-engagement-and-reporting',
+        description: 'Using the school dashboard to monitor participation and share reports with administration.',
+        videoProvider: 'youtube',
+        videoId: 'dQw4w9WgXcQ',
+        duration: 600,
+      },
+      {
+        _id: 'block-3-8',
+        blockType: 'quiz',
+        title: 'Final Knowledge Check',
+        slug: 'catholic-schools-final-knowledge-check',
+        description: 'Confirm your full readiness to implement Hallow across your school.',
+        passingScore: 80,
+        questions: [
+          {
+            _id: 'q-3-5',
             question: 'How do you share a progress report with your school administration?',
             options: [
               'Email parishes@hallow.app and request a report',
@@ -333,6 +520,30 @@ export const mockCourses: Course[] = [
             ],
             correctIndex: 1,
             explanation: 'The school dashboard has a built-in export feature that generates PDF and CSV reports for sharing with administrators and board members.',
+          },
+          {
+            _id: 'q-3-6',
+            question: 'Which metric best demonstrates Hallow\'s impact to a school principal?',
+            options: [
+              'Total app downloads school-wide',
+              'Average daily prayer sessions per student over a semester',
+              'Number of students who rated the app 5 stars',
+              'How many students followed Hallow on social media',
+            ],
+            correctIndex: 1,
+            explanation: 'Consistent daily engagement over time — not one-time actions — is the metric that demonstrates genuine habit formation and spiritual impact.',
+          },
+          {
+            _id: 'q-3-7',
+            question: 'A teacher notices student engagement dropped in week three of an Advent challenge. What should they do?',
+            options: [
+              'End the challenge early and move on',
+              'Give students extra credit for completing sessions to re-engage them',
+              'Do a brief in-class reflection and re-announce the challenge with pastoral enthusiasm',
+              'Switch to a different prayer app',
+            ],
+            correctIndex: 2,
+            explanation: 'Re-anchoring the challenge with a classroom moment of shared prayer and visible teacher enthusiasm typically restores momentum.',
           },
         ],
       },
@@ -348,6 +559,7 @@ export const mockCourses: Course[] = [
     featured: false,
     publishedAt: '2024-04-05',
     blocks: [
+      // ── Section 1: Content Channels ───────────────────────────
       {
         _id: 'block-4-1',
         blockType: 'video',
@@ -360,6 +572,41 @@ export const mockCourses: Course[] = [
       },
       {
         _id: 'block-4-2',
+        blockType: 'quiz',
+        title: 'Check-In: Content Channels',
+        slug: 'check-in-content-channels',
+        description: 'Confirm your understanding of custom channel setup.',
+        passingScore: 75,
+        questions: [
+          {
+            _id: 'q-4-1',
+            question: 'What can you include in a custom Hallow content channel?',
+            options: [
+              'Only audio meditations recorded by Hallow\'s team',
+              'A curated selection of existing Hallow content plus your own uploaded audio',
+              'Only third-party podcasts',
+              'Text-only prayer guides with no audio',
+            ],
+            correctIndex: 1,
+            explanation: 'Custom channels support both curated Hallow library content and partner-uploaded audio, giving you full control over your community\'s prayer experience.',
+          },
+          {
+            _id: 'q-4-2',
+            question: 'Who can see a custom content channel you create?',
+            options: [
+              'All Hallow users globally',
+              'Only users who joined via your partner invite code',
+              'Only Hallow employees',
+              'Anyone who searches for it in the app',
+            ],
+            correctIndex: 1,
+            explanation: 'Custom channels are scoped to your partner community — only members who joined through your invite code will see and access the channel.',
+          },
+        ],
+      },
+      // ── Section 2: User Management ────────────────────────────
+      {
+        _id: 'block-4-3',
         blockType: 'video',
         title: 'Bulk User Management',
         slug: 'bulk-user-management',
@@ -369,7 +616,42 @@ export const mockCourses: Course[] = [
         duration: 720,
       },
       {
-        _id: 'block-4-3',
+        _id: 'block-4-4',
+        blockType: 'quiz',
+        title: 'Check-In: User Management',
+        slug: 'check-in-user-management',
+        description: 'Test your knowledge of managing large user groups.',
+        passingScore: 75,
+        questions: [
+          {
+            _id: 'q-4-3',
+            question: 'What is the most efficient way to onboard 500+ users at once?',
+            options: [
+              'Send individual invites one by one',
+              'Use the bulk CSV import in the admin dashboard',
+              'Ask Hallow support to import them manually',
+              'Create a shared invite link and post it publicly',
+            ],
+            correctIndex: 1,
+            explanation: 'The bulk CSV import tool in the admin dashboard lets you upload a spreadsheet of users and send invites in a single action.',
+          },
+          {
+            _id: 'q-4-4',
+            question: 'When should you use user groups within the admin dashboard?',
+            options: [
+              'Only for users with premium subscriptions',
+              'To organize users by ministry, grade, or location for targeted reporting and content',
+              'Groups are only for schools, not parishes',
+              'Groups are only needed when you have 1,000+ users',
+            ],
+            correctIndex: 1,
+            explanation: 'User groups let you segment your community (e.g., by ministry team or school grade) so you can track engagement and surface relevant content per segment.',
+          },
+        ],
+      },
+      // ── Section 3: SSO & API ──────────────────────────────────
+      {
+        _id: 'block-4-5',
         blockType: 'video',
         title: 'SSO & API Integration',
         slug: 'sso-and-api-integration',
@@ -379,7 +661,7 @@ export const mockCourses: Course[] = [
         duration: 1080,
       },
       {
-        _id: 'block-4-4',
+        _id: 'block-4-6',
         blockType: 'file',
         title: 'API Documentation',
         slug: 'api-documentation',
@@ -389,15 +671,15 @@ export const mockCourses: Course[] = [
         fileSize: '3.4 MB',
       },
       {
-        _id: 'block-4-5',
+        _id: 'block-4-7',
         blockType: 'quiz',
-        title: 'Advanced Features: Knowledge Check',
-        slug: 'advanced-features-knowledge-check',
-        description: 'Verify your understanding of Hallow\'s advanced integration and management features.',
+        title: 'Final Knowledge Check',
+        slug: 'advanced-features-final-knowledge-check',
+        description: 'Verify your full understanding of Hallow\'s advanced integration and management features.',
         passingScore: 75,
         questions: [
           {
-            _id: 'q-4-1',
+            _id: 'q-4-5',
             question: 'What authentication method does the Hallow Partner API support?',
             options: [
               'Basic username/password',
@@ -409,16 +691,28 @@ export const mockCourses: Course[] = [
             explanation: 'The Hallow Partner API supports both OAuth 2.0 for user-level access and API key authentication for server-to-server integrations.',
           },
           {
-            _id: 'q-4-2',
-            question: 'What is the most efficient way to onboard 500+ users at once?',
+            _id: 'q-4-6',
+            question: 'What is SSO (Single Sign-On) used for in a school context?',
             options: [
-              'Send individual invites one by one',
-              'Use the bulk CSV import in the admin dashboard',
-              'Ask Hallow support to import them manually',
-              'Create a shared invite link and post it publicly',
+              'Allowing students to pay for Hallow with a school account',
+              'Letting students log into Hallow automatically using their existing school Google or Microsoft account',
+              'Creating a shared Hallow account all students use simultaneously',
+              'Exporting student data to a government database',
             ],
             correctIndex: 1,
-            explanation: 'The bulk CSV import tool in the admin dashboard lets you upload a spreadsheet of users and send invites in a single action.',
+            explanation: 'SSO lets students sign into Hallow using the same credentials they already use for school systems (Google Workspace, Microsoft 365), eliminating password friction.',
+          },
+          {
+            _id: 'q-4-7',
+            question: 'Which API endpoint would you use to automatically provision new student accounts at the start of each school year?',
+            options: [
+              'GET /community/stats',
+              'POST /users/bulk',
+              'DELETE /users/archive',
+              'PATCH /channels/update',
+            ],
+            correctIndex: 1,
+            explanation: 'POST /users/bulk accepts a JSON array of user objects and provisions accounts in a single request — ideal for annual school enrollment automation.',
           },
         ],
       },

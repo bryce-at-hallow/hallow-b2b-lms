@@ -11,17 +11,33 @@ const totalFiles  = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.
 
   <!-- Page Header -->
   <div class="bg-surface border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="px-5 sm:px-10 lg:px-12 py-12">
       <div class="flex items-center gap-2.5 mb-4">
         <span class="w-5 h-px bg-hallow-purple"></span>
         <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Courses</span>
       </div>
-      <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
-        Partner Training Library
-      </h1>
-      <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
-        Self-paced courses — videos and resources — to help you get the most from your Hallow partnership.
-      </p>
+      <div class="flex flex-col sm:flex-row sm:items-end gap-6">
+        <div class="flex-1">
+          <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
+            Partner Training Library
+          </h1>
+          <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
+            Self-paced courses — videos and resources — to help you get the most from your Hallow partnership.
+          </p>
+        </div>
+        <!-- Search -->
+        <div class="relative sm:w-72 shrink-0">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+          <input
+            id="course-search"
+            type="search"
+            placeholder="Search courses…"
+            class="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-hallow-purple focus:ring-2 focus:ring-hallow-purple/10 transition"
+          />
+        </div>
+      </div>
       <div class="flex gap-6 mt-6 pt-6 border-t border-gray-200">
         <div>
           <span class="text-xl font-extrabold text-gray-900">{mockCourses.length}</span>
@@ -39,7 +55,26 @@ const totalFiles  = mockCourses.reduce((sum, c) => sum + c.blocks.filter(b => b.
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="px-5 sm:px-10 lg:px-12 py-12">
+    <div id="courses-empty" class="hidden py-16 text-center text-gray-400 text-[15px]">No courses match your search.</div>
     <CourseGrid courses={mockCourses} />
   </div>
+
+  <script>
+    const input = document.getElementById('course-search') as HTMLInputElement | null;
+    const empty = document.getElementById('courses-empty') as HTMLElement | null;
+
+    input?.addEventListener('input', () => {
+      const query = input.value.trim().toLowerCase();
+      const cards = document.querySelectorAll<HTMLElement>('[data-course-title]');
+      let visible = 0;
+      cards.forEach(card => {
+        const title = (card.dataset.courseTitle ?? '').toLowerCase();
+        const show = !query || title.includes(query);
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+    });
+  </script>
 </BaseLayout>

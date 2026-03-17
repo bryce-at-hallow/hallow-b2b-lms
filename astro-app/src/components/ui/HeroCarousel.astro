@@ -73,7 +73,7 @@ const { items } = Astro.props;
     <!-- Prev arrow -->
     <button
       id="hero-prev"
-      class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:bg-white transition-all opacity-0 pointer-events-none z-10"
+      class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-md hover:bg-white transition-all z-10"
       aria-label="Previous"
     >
       <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,24 +211,11 @@ const { items } = Astro.props;
       }
     }
 
-    // Update arrow visibility
-    if (prevBtn) {
-      prevBtn.style.opacity = current > 0 ? '1' : '0';
-      prevBtn.style.pointerEvents = current > 0 ? 'auto' : 'none';
-    }
-    if (nextBtn) {
-      const atEnd = current >= total - 1;
-      nextBtn.style.opacity = atEnd ? '0' : '1';
-      nextBtn.style.pointerEvents = atEnd ? 'none' : 'auto';
-    }
   }
 
   function startAuto() {
     clearInterval(autoTimer);
-    autoTimer = setInterval(() => {
-      if (current < slides().length - 1) goTo(current + 1);
-      else clearInterval(autoTimer);
-    }, 6000);
+    autoTimer = setInterval(() => goTo(current + 1), 6000);
   }
 
   function resetAuto() {
