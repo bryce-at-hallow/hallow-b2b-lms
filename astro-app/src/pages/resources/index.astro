@@ -1,54 +1,266 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ResourceFilters from '../../components/resources/ResourceFilters.astro';
-import ResourceCard from '../../components/resources/ResourceCard.astro';
-import EmptyState from '../../components/ui/EmptyState.astro';
 import { mockResources } from '../../lib/mockData';
+import { categoryLabel } from '../../lib/utils';
 
 const categories = [...new Set(mockResources.map(r => r.category))];
+
+// Color palette per category
+const catColors: Record<string, { bg: string; text: string; dot: string }> = {
+  'documentation':        { bg: 'bg-blue-50',   text: 'text-blue-700',   dot: 'bg-blue-400' },
+  'teacher-planning':     { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-400' },
+  'educational-content':  { bg: 'bg-green-50',  text: 'text-green-700',  dot: 'bg-green-500' },
+  'marketing-materials':  { bg: 'bg-pink-50',   text: 'text-pink-700',   dot: 'bg-pink-400' },
+  'technical-guides':     { bg: 'bg-violet-50', text: 'text-violet-700', dot: 'bg-violet-400' },
+};
+
+const fileIconColors: Record<string, string> = {
+  'PDF':  'bg-red-100 text-red-600',
+  'DOCX': 'bg-blue-100 text-blue-600',
+  'ZIP':  'bg-amber-100 text-amber-600',
+  'LINK': 'bg-gray-100 text-gray-500',
+};
 ---
 
 <BaseLayout title="Resources" description="Downloadable materials, guides, and tools for Hallow partners.">
+  <div class="flex min-h-[calc(100vh-64px)]">
 
-  <!-- Page Header -->
-  <div class="bg-surface border-b border-gray-100">
-    <div class="px-5 sm:px-10 lg:px-12 py-12">
-      <div class="flex items-center gap-2.5 mb-4">
-        <span class="w-5 h-px bg-hallow-purple"></span>
-        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Resources</span>
+    <!-- ── Left Sidebar ─────────────────────────────────────────── -->
+    <aside class="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 border-r border-gray-100 bg-white sticky top-16 self-start h-[calc(100vh-64px)] overflow-y-auto pt-8 pb-10 px-5">
+
+      <!-- Search -->
+      <div class="relative mb-6">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+        </svg>
+        <input
+          id="resource-search"
+          type="search"
+          placeholder="Search…"
+          class="w-full pl-8 pr-3 py-2 text-[13px] bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:border-hallow-purple focus:bg-white transition"
+        />
       </div>
-      <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
-        Resource Library
-      </h1>
-      <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
-        Everything you need to support your partnership — from marketing materials to technical documentation.
-      </p>
-      <div class="flex gap-6 mt-6 pt-6 border-t border-gray-200">
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{mockResources.length}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Resources</span>
+
+      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400 mb-3 px-1">Category</p>
+      <nav class="flex flex-col gap-0.5">
+        <button
+          class="resource-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-semibold bg-gray-900 text-white transition-colors"
+          data-category="all"
+        >
+          All Resources
+          <span class="ml-auto float-right text-white/50 font-medium">{mockResources.length}</span>
+        </button>
+        {categories.map(cat => {
+          const count = mockResources.filter(r => r.category === cat).length;
+          const colors = catColors[cat] ?? { dot: 'bg-gray-400' };
+          return (
+            <button
+              class="resource-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors flex items-center gap-2"
+              data-category={cat}
+            >
+              <span class={`w-2 h-2 rounded-full shrink-0 ${colors.dot}`}></span>
+              <span class="flex-1 truncate">{categoryLabel(cat)}</span>
+              <span class="text-gray-400 font-medium">{count}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      <!-- Stats -->
+      <div class="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Total</span>
+          <span class="text-[13px] font-bold text-gray-900">{mockResources.length}</span>
         </div>
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{categories.length}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Categories</span>
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Categories</span>
+          <span class="text-[13px] font-bold text-gray-900">{categories.length}</span>
         </div>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ──────────────────────────────────────────── -->
+    <div class="flex-1 min-w-0 px-5 sm:px-8 lg:px-10 xl:px-14 py-10">
+
+      <!-- Mobile search + filter row -->
+      <div class="flex items-center gap-3 mb-6 lg:hidden">
+        <div class="relative flex-1">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+          </svg>
+          <input
+            id="resource-search-mobile"
+            type="search"
+            placeholder="Search resources…"
+            class="w-full pl-10 pr-4 py-2.5 text-[14px] bg-white border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-hallow-purple focus:ring-2 focus:ring-hallow-purple/10 transition"
+          />
+        </div>
+      </div>
+
+      <!-- Mobile category pills -->
+      <div class="flex items-center gap-2 mb-8 lg:hidden overflow-x-auto pb-1">
+        <button class="resource-cat-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-gray-900 text-white border-gray-900 transition-colors" data-category="all">All</button>
+        {categories.map(cat => (
+          <button
+            class="resource-cat-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium border bg-white text-gray-600 border-gray-200 hover:border-gray-400 transition-colors"
+            data-category={cat}
+          >
+            {categoryLabel(cat)}
+          </button>
+        ))}
+      </div>
+
+      <!-- Heading -->
+      <div class="flex items-baseline justify-between mb-8">
+        <h1 id="resources-heading" class="text-[22px] font-bold text-gray-900">All Resources</h1>
+        <span id="resources-count" class="text-[13px] text-gray-400 font-medium">{mockResources.length} resources</span>
+      </div>
+
+      <!-- Empty -->
+      <div id="resources-empty" class="hidden py-20 text-center">
+        <p class="text-gray-400 text-[15px]">No resources match your search.</p>
+      </div>
+
+      <!-- Grid -->
+      <div id="resources-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        {mockResources.map((resource, i) => {
+          const colors    = catColors[resource.category] ?? { bg: 'bg-gray-50', text: 'text-gray-600', dot: 'bg-gray-400' };
+          const fileColor = fileIconColors[resource.fileType ?? ''] ?? 'bg-gray-100 text-gray-500';
+          const stagger   = `stagger-${Math.min(i + 1, 6)}`;
+          const isLink    = resource.resourceType === 'link';
+          const href      = isLink ? (resource.externalUrl ?? '#') : '#';
+          const tags      = (resource.fileType ?? 'FILE');
+          return (
+            <a
+              href={href}
+              target={isLink ? '_blank' : undefined}
+              rel={isLink ? 'noopener noreferrer' : undefined}
+              data-resource-title={resource.title}
+              data-resource-category={resource.category}
+              class={`group flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-hallow-purple/30 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 animate-fade-up opacity-0 ${stagger}`}
+            >
+              <!-- Colored header block -->
+              <div class={`relative flex items-center justify-between px-5 py-5 ${colors.bg}`}>
+                <!-- File type pill -->
+                <span class={`inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold tracking-wide ${fileColor}`}>
+                  {resource.fileType ?? (isLink ? 'LINK' : 'FILE')}
+                </span>
+
+                <!-- File icon -->
+                {isLink ? (
+                  <svg class="w-8 h-8 text-gray-300 group-hover:text-hallow-purple/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                ) : (
+                  <svg class="w-8 h-8 text-gray-300 group-hover:text-hallow-purple/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                )}
+              </div>
+
+              <!-- Content -->
+              <div class="flex flex-col flex-1 p-5">
+                <!-- Category label -->
+                <div class="flex items-center gap-1.5 mb-2">
+                  <span class={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`}></span>
+                  <span class={`text-[11px] font-semibold uppercase tracking-wide ${colors.text}`}>{categoryLabel(resource.category)}</span>
+                </div>
+
+                <h3 class="font-semibold text-gray-900 text-[14px] leading-snug mb-1.5 group-hover:text-hallow-purple transition-colors">
+                  {resource.title}
+                </h3>
+                <p class="text-gray-400 text-[13px] leading-relaxed line-clamp-2 flex-1">
+                  {resource.description}
+                </p>
+
+                <!-- Footer -->
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                  <span class="text-[11px] text-gray-400">
+                    {new Date(resource.publishedAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                  </span>
+                  <span class="text-[12px] font-semibold text-hallow-purple opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                    {isLink ? 'Open link' : 'Download'}
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
       </div>
     </div>
   </div>
 
-  <div class="px-5 sm:px-10 lg:px-12 py-12">
-    <ResourceFilters categories={categories} />
+  <script>
+    let activeCategory = 'all';
+    let searchQuery    = '';
 
-    {mockResources.length === 0 ? (
-      <EmptyState title="No resources yet" description="Resources will be added soon." icon="📂" />
-    ) : (
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="resources-grid">
-        {mockResources.map((resource, i) => (
-          <div data-resource-category={resource.category}>
-            <ResourceCard resource={resource} index={i} />
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
+    const grid      = document.getElementById('resources-grid') as HTMLElement;
+    const empty     = document.getElementById('resources-empty') as HTMLElement;
+    const heading   = document.getElementById('resources-heading') as HTMLElement;
+    const countEl   = document.getElementById('resources-count') as HTMLElement;
+    const catBtns   = document.querySelectorAll<HTMLButtonElement>('.resource-cat-btn');
+    const searchEl  = document.getElementById('resource-search') as HTMLInputElement | null;
+    const searchMob = document.getElementById('resource-search-mobile') as HTMLInputElement | null;
+
+    const catLabels: Record<string, string> = {
+      'all':                  'All Resources',
+      'documentation':        'Documentation',
+      'teacher-planning':     'Teacher Planning',
+      'educational-content':  'Educational Content',
+      'marketing-materials':  'Marketing Materials',
+      'technical-guides':     'Technical Guides',
+    };
+
+    function applyFilters() {
+      const cards = grid.querySelectorAll<HTMLElement>('[data-resource-title]');
+      let visible = 0;
+      cards.forEach(card => {
+        const title    = (card.dataset.resourceTitle ?? '').toLowerCase();
+        const category = card.dataset.resourceCategory ?? '';
+        const matchCat = activeCategory === 'all' || category === activeCategory;
+        const matchQ   = !searchQuery || title.includes(searchQuery);
+        const show = matchCat && matchQ;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      empty.style.display = visible === 0 ? 'block' : 'none';
+      grid.style.display  = visible === 0 ? 'none' : '';
+      countEl.textContent = `${visible} resource${visible !== 1 ? 's' : ''}`;
+    }
+
+    catBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCategory = btn.dataset.category ?? 'all';
+        heading.textContent = catLabels[activeCategory] ?? activeCategory;
+
+        catBtns.forEach(b => {
+          const isActive = b.dataset.category === activeCategory;
+          if (b.closest('aside')) {
+            if (isActive) {
+              b.className = 'resource-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-semibold bg-gray-900 text-white transition-colors flex items-center gap-2';
+            } else {
+              b.className = 'resource-cat-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors flex items-center gap-2';
+            }
+          } else {
+            b.className = isActive
+              ? 'resource-cat-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold border bg-gray-900 text-white border-gray-900 transition-colors'
+              : 'resource-cat-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-medium border bg-white text-gray-600 border-gray-200 hover:border-gray-400 transition-colors';
+          }
+        });
+
+        applyFilters();
+      });
+    });
+
+    function onSearch(val: string) {
+      searchQuery = val.trim().toLowerCase();
+      applyFilters();
+    }
+
+    searchEl?.addEventListener('input', () => onSearch(searchEl.value));
+    searchMob?.addEventListener('input', () => onSearch(searchMob.value));
+  </script>
 </BaseLayout>

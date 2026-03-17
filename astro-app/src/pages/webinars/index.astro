@@ -1,41 +1,283 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import WebinarTabs from '../../components/webinars/WebinarTabs.astro';
 import { mockWebinars } from '../../lib/mockData';
+import { formatDurationMinutes } from '../../lib/utils';
 
 const upcoming = mockWebinars.filter(w => w.status === 'upcoming');
-const past = mockWebinars.filter(w => w.status === 'past');
+const past     = mockWebinars.filter(w => w.status === 'past');
+
+function fmtDay(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+function fmtTime(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+}
+function fmtMonth(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
+}
+function fmtDate(iso: string) {
+  return new Date(iso).getDate();
+}
 ---
 
 <BaseLayout title="Webinars" description="Live and recorded webinars for Hallow partners.">
+  <div class="flex min-h-[calc(100vh-64px)]">
 
-  <!-- Page Header -->
-  <div class="bg-surface border-b border-gray-100">
-    <div class="px-5 sm:px-10 lg:px-12 py-12">
-      <div class="flex items-center gap-2.5 mb-4">
-        <span class="w-5 h-px bg-hallow-purple"></span>
-        <span class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">Webinars</span>
+    <!-- ── Left Sidebar ─────────────────────────────────────────── -->
+    <aside class="hidden lg:flex flex-col w-56 xl:w-64 shrink-0 border-r border-gray-100 bg-white sticky top-16 self-start h-[calc(100vh-64px)] overflow-y-auto pt-8 pb-10 px-5">
+
+      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400 mb-3 px-1">Filter</p>
+      <nav class="flex flex-col gap-0.5">
+        <button class="webinar-filter-btn text-left px-3 py-2 rounded-lg text-[13px] font-semibold bg-gray-900 text-white transition-colors" data-filter="all">
+          All Webinars
+          <span class="ml-auto float-right text-white/50 font-medium">{mockWebinars.length}</span>
+        </button>
+        <button class="webinar-filter-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors" data-filter="upcoming">
+          Upcoming
+          <span class="ml-auto float-right text-gray-400 font-medium">{upcoming.length}</span>
+        </button>
+        <button class="webinar-filter-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors" data-filter="past">
+          Recordings
+          <span class="ml-auto float-right text-gray-400 font-medium">{past.length}</span>
+        </button>
+      </nav>
+
+      <!-- Tags -->
+      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400 mb-3 px-1 mt-8">Topics</p>
+      <div class="flex flex-wrap gap-1.5">
+        {[...new Set(mockWebinars.flatMap(w => w.tags))].map(tag => (
+          <button
+            class="webinar-tag-btn px-2.5 py-1 rounded-full text-[11px] font-medium bg-gray-100 text-gray-500 hover:bg-hallow-purple-muted hover:text-hallow-purple transition-colors"
+            data-tag={tag}
+          >
+            {tag}
+          </button>
+        ))}
       </div>
-      <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 leading-tight mb-3">
-        Partner Webinars
-      </h1>
-      <p class="text-gray-500 text-[15px] max-w-xl leading-relaxed">
-        Live sessions, workshops, and recorded replays — all designed to help your community thrive with Hallow.
-      </p>
-      <div class="flex gap-6 mt-6 pt-6 border-t border-gray-200">
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{upcoming.length}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Upcoming</span>
+
+      <!-- Stats -->
+      <div class="mt-auto pt-8 border-t border-gray-100 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Upcoming</span>
+          <span class="text-[13px] font-bold text-gray-900">{upcoming.length}</span>
         </div>
-        <div>
-          <span class="text-xl font-extrabold text-gray-900">{past.length}</span>
-          <span class="text-[12px] text-gray-400 ml-1.5">Recordings</span>
+        <div class="flex items-center justify-between">
+          <span class="text-[12px] text-gray-400">Recordings</span>
+          <span class="text-[13px] font-bold text-gray-900">{past.length}</span>
         </div>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ──────────────────────────────────────────── -->
+    <div class="flex-1 min-w-0 px-5 sm:px-8 lg:px-10 xl:px-14 py-10">
+
+      <!-- Mobile filter row -->
+      <div class="flex items-center gap-2 mb-8 lg:hidden overflow-x-auto pb-1">
+        {['all', 'upcoming', 'past'].map(f => (
+          <button
+            class={`webinar-filter-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors ${f === 'all' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}
+            data-filter={f}
+          >
+            {f === 'all' ? 'All' : f === 'upcoming' ? 'Upcoming' : 'Recordings'}
+          </button>
+        ))}
+      </div>
+
+      <!-- Heading -->
+      <div class="flex items-baseline justify-between mb-8">
+        <h1 id="webinars-heading" class="text-[22px] font-bold text-gray-900">All Webinars</h1>
+        <span id="webinars-count" class="text-[13px] text-gray-400 font-medium">{mockWebinars.length} sessions</span>
+      </div>
+
+      <!-- Empty -->
+      <div id="webinars-empty" class="hidden py-20 text-center">
+        <p class="text-gray-400 text-[15px]">No webinars match your filter.</p>
+      </div>
+
+      <!-- Grid -->
+      <div id="webinars-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-5 gap-y-10">
+        {mockWebinars.map((webinar, i) => {
+          const isUpcoming = webinar.status === 'upcoming';
+          const stagger = `stagger-${Math.min(i + 1, 6)}`;
+          const tags = (webinar.tags ?? []).join(',');
+          return (
+            <div
+              data-webinar-status={webinar.status}
+              data-webinar-tags={tags}
+              class={`group flex flex-col animate-fade-up opacity-0 ${stagger}`}
+            >
+              <!-- Thumbnail -->
+              <div class="relative overflow-hidden rounded-xl mb-4" style="aspect-ratio: 16/10;">
+                <img
+                  src={webinar.thumbnail}
+                  alt={webinar.title}
+                  class="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+                  loading="lazy"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+
+                <!-- Status badge top-left -->
+                {isUpcoming ? (
+                  <div class="absolute top-3 left-3">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-500 text-white text-[11px] font-bold tracking-wide">
+                      <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                      Live Soon
+                    </span>
+                  </div>
+                ) : (
+                  <div class="absolute top-3 left-3">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/50 backdrop-blur-sm text-white text-[11px] font-semibold">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                      Recording
+                    </span>
+                  </div>
+                )}
+
+                <!-- Calendar date — bottom-left, prominent -->
+                <div class="absolute bottom-3 left-3">
+                  <div class={`flex flex-col items-center rounded-lg overflow-hidden shadow-lg w-12 ${isUpcoming ? 'border-2 border-white/30' : 'opacity-80'}`}>
+                    <div class={`w-full text-center text-[9px] font-black uppercase tracking-widest py-0.5 ${isUpcoming ? 'bg-hallow-purple text-white' : 'bg-gray-700 text-white'}`}>
+                      {fmtMonth(webinar.scheduledAt)}
+                    </div>
+                    <div class="bg-white w-full text-center text-[22px] font-black text-gray-900 leading-none py-1.5">
+                      {fmtDate(webinar.scheduledAt)}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Duration bottom-right -->
+                {webinar.duration && (
+                  <div class="absolute bottom-3 right-3">
+                    <span class="px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm text-white text-[11px] font-semibold">
+                      {formatDurationMinutes(webinar.duration)}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              <!-- Text block -->
+              <div class="flex flex-col flex-1">
+                <!-- Date line — prominent -->
+                <p class={`text-[12px] font-bold mb-1 ${isUpcoming ? 'text-hallow-purple' : 'text-gray-400'}`}>
+                  {fmtDay(webinar.scheduledAt)}
+                  {isUpcoming && (
+                    <span class="ml-2 text-gray-400 font-medium">· {fmtTime(webinar.scheduledAt)}</span>
+                  )}
+                </p>
+
+                <h3 class="font-semibold text-gray-900 text-[15px] leading-snug mb-1">
+                  {webinar.title}
+                </h3>
+                <p class="text-gray-400 text-[13px] mb-3 line-clamp-2 leading-relaxed flex-1">
+                  {webinar.description}
+                </p>
+
+                <!-- Presenter -->
+                <p class="text-[12px] text-gray-500 mb-4 flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  {webinar.presenter}
+                </p>
+
+                <!-- CTA -->
+                {isUpcoming ? (
+                  <a
+                    href={webinar.registrationUrl ?? '#'}
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-hallow-purple text-white text-[13px] font-bold rounded-xl hover:bg-hallow-purple-dark transition-colors w-full sm:w-auto"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    RSVP Now
+                  </a>
+                ) : webinar.recordingUrl ? (
+                  <a
+                    href={webinar.recordingUrl}
+                    class="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-200 text-gray-700 text-[13px] font-semibold rounded-xl hover:border-hallow-purple hover:text-hallow-purple transition-colors w-full sm:w-auto"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    Watch Recording
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   </div>
 
-  <div class="px-5 sm:px-10 lg:px-12 py-12">
-    <WebinarTabs upcoming={upcoming} past={past} />
-  </div>
+  <script>
+    let activeFilter = 'all';
+    let activeTag    = '';
+
+    const grid      = document.getElementById('webinars-grid') as HTMLElement;
+    const empty     = document.getElementById('webinars-empty') as HTMLElement;
+    const heading   = document.getElementById('webinars-heading') as HTMLElement;
+    const countEl   = document.getElementById('webinars-count') as HTMLElement;
+    const filterBtns = document.querySelectorAll<HTMLButtonElement>('.webinar-filter-btn');
+    const tagBtns    = document.querySelectorAll<HTMLButtonElement>('.webinar-tag-btn');
+
+    function applyFilters() {
+      const cards = grid.querySelectorAll<HTMLElement>('[data-webinar-status]');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const status = card.dataset.webinarStatus ?? '';
+        const tags   = card.dataset.webinarTags ?? '';
+        const matchStatus = activeFilter === 'all' || status === activeFilter;
+        const matchTag    = !activeTag || tags.split(',').includes(activeTag);
+        const show = matchStatus && matchTag;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      empty.style.display = visible === 0 ? 'block' : 'none';
+      grid.style.display  = visible === 0 ? 'none' : '';
+      countEl.textContent = `${visible} session${visible !== 1 ? 's' : ''}`;
+    }
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeFilter = btn.dataset.filter ?? 'all';
+        const labels: Record<string, string> = { all: 'All Webinars', upcoming: 'Upcoming', past: 'Recordings' };
+        heading.textContent = labels[activeFilter] ?? 'Webinars';
+
+        filterBtns.forEach(b => {
+          const isActive = b.dataset.filter === activeFilter;
+          // desktop sidebar style
+          if (b.closest('aside')) {
+            b.className = isActive
+              ? 'webinar-filter-btn text-left px-3 py-2 rounded-lg text-[13px] font-semibold bg-gray-900 text-white transition-colors'
+              : 'webinar-filter-btn text-left px-3 py-2 rounded-lg text-[13px] font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors';
+          } else {
+            // mobile pill style
+            b.className = isActive
+              ? 'webinar-filter-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-gray-900 text-white border-gray-900'
+              : 'webinar-filter-btn shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold border transition-colors bg-white text-gray-600 border-gray-200 hover:border-gray-400';
+          }
+        });
+
+        applyFilters();
+      });
+    });
+
+    tagBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag ?? '';
+        activeTag = activeTag === tag ? '' : tag; // toggle
+
+        tagBtns.forEach(b => {
+          b.className = b.dataset.tag === activeTag
+            ? 'webinar-tag-btn px-2.5 py-1 rounded-full text-[11px] font-medium bg-hallow-purple text-white transition-colors'
+            : 'webinar-tag-btn px-2.5 py-1 rounded-full text-[11px] font-medium bg-gray-100 text-gray-500 hover:bg-hallow-purple-muted hover:text-hallow-purple transition-colors';
+        });
+
+        applyFilters();
+      });
+    });
+  </script>
 </BaseLayout>
